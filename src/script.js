@@ -263,6 +263,7 @@ let horizontalScrollTarget = 0;
 let isHorizontalScrolling = false;
 
 let isPullingTransition = false;
+let lastTransitionDirection = 'down';
 let transitionAnimId = null;
 let settleTimer = null;
 let heroPullTimer = null;
@@ -467,6 +468,20 @@ function applyIdleSettle() {
             isVerticalScrolling = true;
             requestAnimationFrame(updateVerticalScroll);
         }
+        return;
+    }
+
+    // Cover section exit auto pull-up: once bottom of cover section is at or past 50vh, pull it up smoothly!
+    const coverRect = coverSection ? coverSection.getBoundingClientRect() : null;
+    const coverBottomDist = coverRect ? coverRect.bottom : window.innerHeight;
+    const coverBottomScrollY = getCoverBottomScrollY();
+    const maxScrollY = getMaxScrollY();
+
+    if (coverBottomScrollY > 0 && window.scrollY > coverBottomScrollY && window.scrollY < maxScrollY) {
+        if (coverBottomDist <= window.innerHeight * 0.50) {
+            transitionTo(maxScrollY, 1300);
+            return;
+        }
     }
 }
 
@@ -531,6 +546,7 @@ function transitionTo(targetY, duration = 500) {
     isPullingTransition = true;
     const startY = window.scrollY;
     const distance = targetY - startY;
+    lastTransitionDirection = distance >= 0 ? 'down' : 'up';
 
     if (Math.abs(distance) < 1) {
         window.scrollTo(0, targetY);
@@ -553,6 +569,7 @@ function transitionTo(targetY, duration = 500) {
         const eased = easeOutQuart(progress);
 
         window.scrollTo(0, startY + distance * eased);
+        targetScrollY = window.scrollY;
         updateCoverExitTransform();
 
         if (progress < 1) {
@@ -622,12 +639,21 @@ window.addEventListener('wheel', (event) => {
         clientWorkGrid.scrollLeft >= maxHScroll - 8 || horizontalScrollTarget >= maxHScroll - 5
     );
 
-    // If user scrolls during a snap transition, cancel it immediately so user retains full control with zero lockout
+    // If user scrolls during a snap transition:
+    // Only cancel if user actively scrolls in the OPPOSITE direction (reversing).
+    // Otherwise absorb same-direction momentum so transition glides smoothly without interruption or glitch.
     if (isPullingTransition) {
-        if (transitionAnimId) cancelAnimationFrame(transitionAnimId);
-        isPullingTransition = false;
-        transitionAnimId = null;
-        targetScrollY = window.scrollY;
+        const isReversing = (lastTransitionDirection === 'down' && event.deltaY < -3) ||
+                            (lastTransitionDirection === 'up' && event.deltaY > 3);
+        if (isReversing) {
+            if (transitionAnimId) cancelAnimationFrame(transitionAnimId);
+            isPullingTransition = false;
+            transitionAnimId = null;
+            targetScrollY = window.scrollY;
+        } else {
+            event.preventDefault();
+            return;
+        }
     }
 
     // 0. Hero Top Upward Overscroll (pulling down / scrolling up past the top of the page)
@@ -722,6 +748,12 @@ window.addEventListener('wheel', (event) => {
         0,
         Math.min(maxAllowedY, targetScrollY + event.deltaY * VERTICAL_SCROLL_SENSITIVITY)
     );
+
+    // Auto pull-up for cover section exit once bottom of cover section reaches 50vh (slow, cinematic pull-up)
+    if (cardsAreAtEnd && event.deltaY > 0 && coverBottomDist <= window.innerHeight * 0.50 && window.scrollY < maxScrollY - 4) {
+        transitionTo(maxScrollY, 1350);
+        return;
+    }
 
     if (!isVerticalScrolling) {
         isVerticalScrolling = true;

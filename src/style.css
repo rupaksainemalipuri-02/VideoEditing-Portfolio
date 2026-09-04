@@ -744,8 +744,9 @@ body {
 }
 
 .section-title {
-	margin: 0;
-	display: inline-block;
+	margin: 0 auto;
+	display: block;
+	width: 100%;
 	padding: 0.08em 0.22em;
 	box-sizing: border-box;
 	color: transparent;
@@ -951,6 +952,14 @@ body {
 .client-work {
 	box-sizing: border-box;
 	padding: 5rem 5vw 8rem;
+	text-align: center;
+}
+
+.client-work-title {
+	display: block;
+	width: 100%;
+	text-align: center;
+	margin: 0 auto;
 }
 
 
