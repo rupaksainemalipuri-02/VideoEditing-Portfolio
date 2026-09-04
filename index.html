@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="./src/style.css">
+</head>
+
+<body>
+    <header class="navbar-wrapper">
+        <nav class="site-navbar" aria-label="Main Navigation">
+            <span class="nav-bubble" aria-hidden="true"></span>
+            <ul class="navbar-nav">
+                <li><a href="#home" class="nav-link is-active">Home</a></li>
+                <li><a href="#about" class="nav-link">About</a></li>
+                <li><a href="#tools" class="nav-link">Tools</a></li>
+                <li><a href="#work" class="nav-link">Work</a></li>
+                <li><a href="#instagram" class="nav-link">Instagram</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="hero-section" id="home">
+        <!-- Stage 1: Original Hero Elements (Pushed Up When Cover Section Exits) -->
+        <div class="hero-intro-layer">
+            <h1 class="hero-title">VIDEO EDITOR</h1>
+            <h1 class="hero-title hero-title--overlay">VIDEO EDITOR</h1>
+            <h1 class="hero-title hero-title--overlay">VIDEO EDITOR</h1>
+            <h2 class="portfolio-title">PORTFOLIO</h2>
+            <img class="profile-image profile-image--glow" src="./public/photos/me.png" alt="">
+            <img class="profile-image profile-image--front" src="./public/photos/me.png" alt="">
+            <h1 class="hero-title hero-title--outline">VIDEO EDITOR</h1>
+            <div class="hero-bio">
+                <p class="hero-name">Rupak Sai</p>
+                <p class="hero-description">3 years experienced</p>
+                <p class="hero-description">Video Editor &amp; Content Creator</p>
+            </div>
+        </div>
+
+        <!-- Stage 2: Subsections Inside Hero Section (Revealed As Cover Section Exits) -->
+        <div class="hero-content-layer" id="instagram">
+            <section class="content-subsection insta-subsection" aria-labelledby="instagram-title">
+                <h2 class="section-title insta-title" id="instagram-title">
+                    My <span class="about-title-emphasis">Instagram</span> Page
+                </h2>
+                <div class="insta-screen-container">
+                    <a class="insta-screen-card" href="https://www.instagram.com/rupaksai002/" target="_blank" rel="noopener noreferrer" aria-label="Open Rupak Sai Instagram Profile">
+                        <div class="insta-screen-inner">
+                            <img class="insta-screen-img" src="./public/photos/instaPage.png" alt="Rupak Sai Instagram Profile">
+                            <div class="insta-screen-glare" aria-hidden="true"></div>
+                        </div>
+                    </a>
+                </div>
+            </section>
+        </div>
+    </main>
+    <div class="hero-snap-point" aria-hidden="true"></div>
+
+    <section class="cover-section">
+        <section class="about-section" id="about" aria-labelledby="about-title">
+            <h2 class="section-title about-title" id="about-title">About <span class="about-title-emphasis">Me</span>
+            </h2>
+            <p class="about-copy">
+                I call myself a <span class="about-accent">learner</span> or <span class="about-accent">explorer</span>
+                more than a video editor. I have been working in this field for both clients and my own content creation
+                for 3 years now. It have been a journey of learning more than earning. And I would love to keep it that
+                way too. Hence the work I do for you, is the work I do <span class="about-copy-typewriter">for
+                    myself.</span>
+            </p>
+        </section>
+        <section class="editing-tools" id="tools" aria-labelledby="editing-tools-title">
+            <h2 class="section-title editing-tools-title" id="editing-tools-title">What do I <span
+                    class="about-title-emphasis">Edit</span> on?</h2>
+            <div class="editing-tools-panel">
+                <div class="editing-tool is-hovered">
+                    <span class="editing-tool-label">After Effects</span>
+                    <img class="editing-tool-icon editing-tool-icon--after-effects" src="./public/photos/Ae Icon.webp"
+                        alt="Adobe After Effects">
+                </div>
+                <div class="editing-tool">
+                    <span class="editing-tool-label">Premiere Pro</span>
+                    <img class="editing-tool-icon" src="./public/photos/PrProIcon.svg" alt="Adobe Premiere Pro">
+                </div>
+                <div class="editing-tool">
+                    <span class="editing-tool-label">DaVinci Resolve</span>
+                    <img class="editing-tool-icon" src="./public/photos/DaVinciIcon.png" alt="DaVinci Resolve">
+                </div>
+            </div>
+        </section>
+        <section class="client-work" id="work" aria-labelledby="client-work-title">
+            <h2 class="section-title client-work-title" id="client-work-title">Client <span
+                    class="about-title-emphasis">Works</span></h2>
+            <div class="client-work-grid">
+                <article class="client-card">
+                    <div class="client-card-header">
+                        <div class="client-avatar">D</div>
+                        <div>
+                            <h3>Defellix</h3>
+                            <p>3d Lyrical Edit, After Effects</p>
+                        </div>
+                    </div>
+                    <p class="client-result">&#9733; Paid 14% extra</p>
+                    <a class="client-card-link" href="#">Check it out!</a>
+                </article>
+                <article class="client-card">
+                    <div class="client-card-header">
+                        <div class="client-avatar">R</div>
+                        <div>
+                            <h3>Rajanith</h3>
+                            <p>3d Lyrical Edit, After Effects</p>
+                        </div>
+                    </div>
+                    <p class="client-result">&#9733; Paid 66% extra</p>
+                    <a class="client-card-link" href="#">Check it out!</a>
+                </article>
+                <article class="client-card">
+                    <div class="client-card-header">
+                        <div class="client-avatar">S</div>
+                        <div>
+                            <h3>SP Alan</h3>
+                            <p>3d Lyrical Edit, After Effects</p>
+                        </div>
+                    </div>
+                    <p class="client-result">&#9733; Paid 11% extra</p>
+                    <a class="client-card-link" href="#">Check it out!</a>
+                </article>
+                <article class="client-card" aria-hidden="true">
+                    <div class="client-card-header">
+                        <div class="client-avatar">D</div>
+                        <div>
+                            <h3>Defellix</h3>
+                            <p>3d Lyrical Edit, After Effects</p>
+                        </div>
+                    </div>
+                    <p class="client-result">&#9733; Paid 14% extra</p>
+                    <a class="client-card-link" href="#">Check it out!</a>
+                </article>
+                <article class="client-card" aria-hidden="true">
+                    <div class="client-card-header">
+                        <div class="client-avatar">R</div>
+                        <div>
+                            <h3>Rajanith</h3>
+                            <p>3d Lyrical Edit, After Effects</p>
+                        </div>
+                    </div>
+                    <p class="client-result">&#9733; Paid 66% extra</p>
+                    <a class="client-card-link" href="#">Check it out!</a>
+                </article>
+                <article class="client-card" aria-hidden="true">
+                    <div class="client-card-header">
+                        <div class="client-avatar">S</div>
+                        <div>
+                            <h3>SP Alan</h3>
+                            <p>3d Lyrical Edit, After Effects</p>
+                        </div>
+                    </div>
+                    <p class="client-result">&#9733; Paid 11% extra</p>
+                    <a class="client-card-link" href="#">Check it out!</a>
+                </article>
+            </div>
+        </section>
+    </section>
+    <div class="hero-exit-snap-point" aria-hidden="true"></div>
+    <script src="./src/script.js" defer></script>
+</body>
+
+</html>
