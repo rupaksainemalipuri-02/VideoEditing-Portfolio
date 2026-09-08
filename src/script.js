@@ -644,7 +644,7 @@ window.addEventListener('wheel', (event) => {
     // Otherwise absorb same-direction momentum so transition glides smoothly without interruption or glitch.
     if (isPullingTransition) {
         const isReversing = (lastTransitionDirection === 'down' && event.deltaY < -3) ||
-                            (lastTransitionDirection === 'up' && event.deltaY > 3);
+            (lastTransitionDirection === 'up' && event.deltaY > 3);
         if (isReversing) {
             if (transitionAnimId) cancelAnimationFrame(transitionAnimId);
             isPullingTransition = false;

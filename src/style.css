@@ -321,10 +321,12 @@ body {
 	z-index: 3;
 	margin: 0;
 	color: #ffffff;
+	-webkit-text-fill-color: #ffffff;
+	filter: url(#clean-outline);
 	font-family: "Montserrat", sans-serif;
 	font-size: clamp(3rem, 9vw, 7rem);
 	font-weight: 700;
-	letter-spacing: -10%;
+	letter-spacing: -8%;
 	text-align: center;
 	transform: translate(-50%, calc(12% * var(--hero-overscroll, 0))) scale(calc(1 + 0.06 * var(--hero-overscroll, 0)));
 	transform-origin: center center;
