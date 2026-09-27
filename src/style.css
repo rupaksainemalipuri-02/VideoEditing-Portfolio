@@ -1,10 +1,40 @@
+/* ==========================================================================
+   Design tokens & global reset
+   ========================================================================== */
+:root {
+	--clr-primary: #9CD1E1;
+	--clr-primary-dark: #0086AF;
+	--transition-spring: cubic-bezier(0.16, 1, 0.3, 1);
+	--transition-spring-fast: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
 html {
 	scroll-behavior: auto;
 	overscroll-behavior-y: none;
 }
 
+/* Respect prefers-reduced-motion globally */
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
+	}
+}
+
 body {
 	margin: 0;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 }
 
 /* ==========================================================================
@@ -12,11 +42,12 @@ body {
    ========================================================================== */
 .navbar-wrapper {
 	position: fixed;
-	top: clamp(1rem, 2.8vh, 1.8rem);
+	top: clamp(0.75rem, 2.8vh, 1.8rem);
 	left: 50%;
 	transform: translateX(-50%);
 	z-index: 100000;
 	pointer-events: auto;
+	max-width: calc(100vw - 2rem);
 }
 
 .site-navbar {
@@ -131,6 +162,10 @@ body {
 	user-select: none;
 	white-space: nowrap;
 	z-index: 5;
+	/* Remove 300ms tap delay on mobile */
+	touch-action: manipulation;
+	/* Ensure minimum 44px touch target */
+	min-height: 44px;
 }
 
 .nav-link:hover {
@@ -144,23 +179,43 @@ body {
 	text-shadow: 0 0 12px rgba(156, 209, 225, 0.8);
 }
 
-@media (max-width: 600px) {
-	.navbar-wrapper {
-		top: 1rem;
-		width: calc(100% - 2rem);
-		max-width: 380px;
-	}
+/* Mobile nav handled in 700px breakpoint block below */
+/* Hamburger button (hidden on desktop) */
+.nav-hamburger {
+	display: none;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	gap: 5px;
+	width: 44px;
+	height: 44px;
+	padding: 10px;
+	background: transparent;
+	border: none;
+	cursor: pointer;
+	touch-action: manipulation;
+	border-radius: 9999px;
+	color: rgba(255, 255, 255, 0.85);
+	z-index: 5;
+}
 
-	.site-navbar {
-		justify-content: center;
-		padding: 4px 6px;
-	}
+.nav-hamburger span {
+	display: block;
+	width: 20px;
+	height: 2px;
+	background: currentColor;
+	border-radius: 2px;
+	transition: transform 0.25s ease, opacity 0.25s ease;
+}
 
-	.nav-link {
-		padding: 0.45rem 0.75rem;
-		font-size: 0.75rem;
-		letter-spacing: 0.02em;
-	}
+.nav-hamburger[aria-expanded="true"] span:nth-child(1) {
+	transform: translateY(7px) rotate(45deg);
+}
+.nav-hamburger[aria-expanded="true"] span:nth-child(2) {
+	opacity: 0;
+}
+.nav-hamburger[aria-expanded="true"] span:nth-child(3) {
+	transform: translateY(-7px) rotate(-45deg);
 }
 
 .hero-section {
@@ -175,7 +230,8 @@ body {
 			#005B78 48%,
 			#00354A 72%,
 			#00060F 100%);
-	min-height: 100vh;
+	/* 100dvh accounts for mobile browser chrome (address bar, etc.) */
+	min-height: 100dvh;
 }
 
 .hero-title {
@@ -191,7 +247,7 @@ body {
 	-webkit-text-stroke: 0.1px #fff;
 	opacity: 0.1;
 	font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
-	font-size: 16rem;
+	font-size: clamp(4rem, 16vw, 16rem);
 	font-weight: 300;
 	line-height: 0.9;
 	letter-spacing: -8px;
@@ -199,6 +255,7 @@ body {
 	transform: translateY(calc(4% * var(--hero-overscroll, 0))) scaleX(calc(1 + 0.05 * var(--hero-overscroll, 0))) scaleY(calc(3 + 0.15 * var(--hero-overscroll, 0)));
 	transform-origin: center bottom;
 	animation: hero-title-rise 1.85s cubic-bezier(0.16, 1, 0.3, 1) both;
+	will-change: transform;
 }
 
 .hero-title--overlay {
@@ -302,16 +359,16 @@ body {
 	font-weight: 700;
 	font-size: clamp(2rem, 4vw, 4.4rem);
 	line-height: 0.9;
-	letter-spacing: -8%;
+	letter-spacing: -0.04em;
 }
 
 .hero-description {
 	margin: 0.15rem 0 0;
 	font-family: "Montserrat", sans-serif;
-	font-size: clamp(0.7rem, 1.35vw, 1.35rem);
-	font-weight: 100;
-	line-height: 1.05;
-	letter-spacing: -3%;
+	font-size: clamp(0.75rem, 1.35vw, 1.35rem);
+	font-weight: 300;
+	line-height: 1.4;
+	letter-spacing: -0.02em;
 }
 
 .portfolio-title {
@@ -324,11 +381,12 @@ body {
 	font-family: "Montserrat", sans-serif;
 	font-size: clamp(3rem, 9vw, 7rem);
 	font-weight: 700;
-	letter-spacing: -10%;
+	letter-spacing: -0.06em;
 	text-align: center;
 	transform: translate(-50%, calc(12% * var(--hero-overscroll, 0))) scale(calc(1 + 0.06 * var(--hero-overscroll, 0)));
 	transform-origin: center center;
 	animation: portfolio-title-rise 1.85s cubic-bezier(0.16, 1, 0.3, 1) both;
+	will-change: transform;
 }
 
 .profile-image {
@@ -511,6 +569,7 @@ body {
 
 .hero-snap-point {
 	height: 100vh;
+	height: 100dvh;
 }
 
 /* ==========================================================================
@@ -803,10 +862,12 @@ body {
 	-webkit-background-clip: text;
 	background-clip: text;
 	font-family: "Montserrat", sans-serif;
-	font-size: clamp(0.5rem, 1.5vw, 1.8rem);
+	/* Minimum 16px (1rem) — avoids iOS auto-zoom and meets WCAG readability */
+	font-size: clamp(1rem, 1.5vw, 1.35rem);
 	font-weight: 300;
-	line-height: 1.18;
-	letter-spacing: -5%;
+	/* Line-height 1.6 for comfortable reading per WCAG */
+	line-height: 1.6;
+	letter-spacing: -0.02em;
 }
 
 .about-copy-typewriter {
@@ -845,7 +906,7 @@ body {
 	justify-content: center;
 	gap: clamp(0.75rem, 1.5vw, 1rem);
 	box-sizing: border-box;
-	width: min(35rem, 46vw);
+	width: min(35rem, 80vw);
 	height: 4.75rem;
 	margin: 3rem auto 0;
 	padding: 0.25rem 2rem;
@@ -867,19 +928,21 @@ body {
 	cursor: pointer;
 	user-select: none;
 	-webkit-user-select: none;
+	touch-action: manipulation;
 }
 
 .editing-tool-label {
 	position: absolute;
-	bottom: calc(100% + 0.444675rem);
+	bottom: calc(100% + 0.45rem);
 	left: 50%;
-	padding: 0.2858625rem 0.5082rem;
+	padding: 0.3rem 0.55rem;
 	color: #f5f5f5;
 	background: #202020;
 	border: 1px solid rgba(255, 255, 255, 0.18);
 	border-radius: 999px;
 	font-family: "Montserrat", sans-serif;
-	font-size: 0.4764375rem;
+	/* Minimum readable size — was 0.47rem (7.5px) which is unreadable */
+	font-size: 0.7rem;
 	font-weight: 400;
 	line-height: 1;
 	white-space: nowrap;
@@ -961,6 +1024,8 @@ body {
 	width: 100%;
 	overflow-x: auto;
 	overscroll-behavior-x: contain;
+	/* Allow native horizontal swipe on mobile */
+	touch-action: pan-x;
 	margin: 5rem auto 0;
 	padding: 0 1px 1rem;
 	scrollbar-width: none;
@@ -981,7 +1046,7 @@ body {
 }
 
 .client-card {
-	flex: 0 0 clamp(18rem, 28vw, 30rem);
+	flex: 0 0 clamp(16rem, 28vw, 30rem);
 	box-sizing: border-box;
 	min-height: 16rem;
 	padding: 2rem;
@@ -989,6 +1054,11 @@ body {
 	border: 1px solid rgba(156, 209, 225, 0.35);
 	border-radius: 1.5rem;
 	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+	transition: box-shadow 0.25s ease;
+}
+
+.client-card:hover {
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 0 24px rgba(156, 209, 225, 0.12);
 }
 
 .client-card-header {
@@ -1038,9 +1108,11 @@ body {
 }
 
 .client-card-link {
-	display: block;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	margin-top: 1.5rem;
-	padding: 0.8rem 1rem;
+	padding: 0.85rem 1rem;
 	color: #d8f4fb;
 	background: rgba(0, 111, 141, 0.7);
 	border-radius: 1rem;
@@ -1049,7 +1121,10 @@ body {
 	font-weight: 700;
 	text-align: center;
 	text-decoration: none;
+	/* 44px min touch target */
+	min-height: 44px;
 	transition: background 200ms ease, transform 200ms ease;
+	touch-action: manipulation;
 }
 
 .client-card-link:hover {
@@ -1057,18 +1132,89 @@ body {
 	transform: translateY(-2px);
 }
 
+/* Scale feedback on tap */
+.client-card-link:active {
+	transform: scale(0.97);
+}
+
 @media (max-width: 700px) {
+	/* Show hamburger, hide pill nav links by default */
+	.nav-hamburger {
+		display: flex;
+	}
+
+	.navbar-wrapper {
+		top: 0.75rem;
+		left: auto;
+		right: 1rem;
+		transform: none;
+		max-width: none;
+	}
+
+	.site-navbar {
+		justify-content: flex-end;
+		padding: 4px 4px;
+	}
+
+	/* Hidden by default on mobile, toggled via JS */
+	.navbar-nav {
+		display: none;
+		position: absolute;
+		top: calc(100% + 8px);
+		right: 0;
+		flex-direction: column;
+		gap: 2px;
+		background: rgba(4, 9, 17, 0.94);
+		backdrop-filter: blur(20px) saturate(160%);
+		-webkit-backdrop-filter: blur(20px) saturate(160%);
+		border-radius: 18px;
+		padding: 8px;
+		border: 1px solid rgba(156, 209, 225, 0.2);
+		box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8);
+		min-width: 160px;
+		z-index: 200;
+	}
+
+	.navbar-nav.is-open {
+		display: flex;
+	}
+
+	.nav-link {
+		font-size: 0.85rem;
+		padding: 0.6rem 1.2rem;
+		letter-spacing: 0.03em;
+		border-radius: 12px;
+		justify-content: flex-start;
+		width: 100%;
+	}
+
+	/* Hide the sliding bubble on mobile dropdown */
+	.nav-bubble {
+		display: none;
+	}
+
 	.hero-title {
 		font-size: 4.5rem;
+		letter-spacing: -4px;
 	}
 
 	.portfolio-title {
-		bottom: calc(1vh + 6.075rem);
+		bottom: calc(1vh + 6rem);
+		font-size: clamp(2.5rem, 8vw, 4rem);
 	}
 
+	/* Bio: reposition to roughly centred on small screens */
 	.hero-bio {
-		left: 53%;
-		bottom: 8%;
+		left: 50%;
+		bottom: 6%;
+		text-align: center;
+		transform: translateX(-50%);
+		animation: none;
+	}
+
+	/* Profile image: slightly shorter to avoid overlapping centred bio */
+	.profile-image {
+		height: 78%;
 	}
 
 	.hero-name {
@@ -1076,7 +1222,7 @@ body {
 	}
 
 	.hero-description {
-		font-size: clamp(0.6rem, 2.4vw, 0.9rem);
+		font-size: clamp(0.75rem, 2.4vw, 0.9rem);
 	}
 
 	.about-section {
@@ -1085,7 +1231,7 @@ body {
 
 	.about-copy {
 		margin-top: 2.5rem;
-		font-size: clamp(0.9rem, 3.8vw, 1.15rem);
+		font-size: clamp(1rem, 3.8vw, 1.15rem);
 	}
 
 	.editing-tools {
@@ -1094,7 +1240,7 @@ body {
 
 	.editing-tools-panel {
 		gap: 0.75rem;
-		width: min(35rem, 80vw);
+		width: min(35rem, 84vw);
 		height: 3.5rem;
 		margin-top: 3rem;
 		padding: 0.2rem 1rem;
@@ -1110,6 +1256,8 @@ body {
 	}
 
 	.client-card {
+		/* Wide enough to see one full + peek of next card */
+		flex: 0 0 min(20rem, 82vw);
 		min-height: 13rem;
 		padding: 1.25rem;
 	}
@@ -1118,5 +1266,65 @@ body {
 		width: 3.5rem;
 		height: 3.5rem;
 		font-size: 2rem;
+	}
+
+	/* Disable 3D tilt on touch — reduces jank */
+	.insta-screen-container {
+		perspective: none;
+		transform-style: flat;
+	}
+
+	.insta-screen-card {
+		transform-style: flat;
+		will-change: auto;
+	}
+
+	.insta-screen-inner {
+		transform: none;
+		transform-style: flat;
+	}
+
+	.insta-screen-card::before {
+		transform: none;
+	}
+}
+
+/* ==========================================================================
+   Narrow phones — 420px
+   ========================================================================== */
+@media (max-width: 420px) {
+	.hero-bio {
+		bottom: 4%;
+	}
+
+	.portfolio-title {
+		font-size: clamp(2rem, 7vw, 3rem);
+		bottom: calc(1vh + 5rem);
+	}
+
+	.hero-name {
+		font-size: clamp(1.5rem, 7vw, 2.2rem);
+	}
+
+	.client-card {
+		flex: 0 0 min(17rem, 88vw);
+	}
+}
+
+/* ==========================================================================
+   Landscape on mobile
+   ========================================================================== */
+@media (max-width: 900px) and (orientation: landscape) {
+	.hero-section {
+		min-height: 100dvh;
+	}
+
+	.hero-bio {
+		left: 55%;
+		bottom: 10%;
+	}
+
+	.profile-image {
+		height: 90%;
 	}
 }
