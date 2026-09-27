@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Rupak Sai — Video Editor & Content Creator Portfolio</title>
+    <meta name="description" content="Portfolio of Rupak Sai — 3-year experienced video editor and content creator specialising in 3D lyrical edits using Adobe After Effects, Premiere Pro, and DaVinci Resolve.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -17,7 +18,10 @@
     <header class="navbar-wrapper">
         <nav class="site-navbar" aria-label="Main Navigation">
             <span class="nav-bubble" aria-hidden="true"></span>
-            <ul class="navbar-nav">
+            <button class="nav-hamburger" id="nav-hamburger" aria-label="Open navigation menu" aria-expanded="false" aria-controls="navbar-nav-list">
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="navbar-nav" id="navbar-nav-list">
                 <li><a href="#home" class="nav-link is-active">Home</a></li>
                 <li><a href="#about" class="nav-link">About</a></li>
                 <li><a href="#tools" class="nav-link">Tools</a></li>
@@ -34,12 +38,12 @@
             <h1 class="hero-title hero-title--overlay">VIDEO EDITOR</h1>
             <h1 class="hero-title hero-title--overlay">VIDEO EDITOR</h1>
             <h2 class="portfolio-title">PORTFOLIO</h2>
-            <img class="profile-image profile-image--glow" src="./public/photos/me.png" alt="">
-            <img class="profile-image profile-image--front" src="./public/photos/me.png" alt="">
+            <img class="profile-image profile-image--glow" src="./assets/photos/me.png" alt="" aria-hidden="true">
+            <img class="profile-image profile-image--front" src="./assets/photos/me.png" alt="Rupak Sai, Video Editor">
             <h1 class="hero-title hero-title--outline">VIDEO EDITOR</h1>
             <div class="hero-bio">
                 <p class="hero-name">Rupak Sai</p>
-                <p class="hero-description">3 years experienced</p>
+                <p class="hero-description">3 years of experience</p>
                 <p class="hero-description">Video Editor &amp; Content Creator</p>
             </div>
         </div>
@@ -53,7 +57,7 @@
                 <div class="insta-screen-container">
                     <a class="insta-screen-card" href="https://www.instagram.com/rupaksai002/" target="_blank" rel="noopener noreferrer" aria-label="Open Rupak Sai Instagram Profile">
                         <div class="insta-screen-inner">
-                            <img class="insta-screen-img" src="./public/photos/instaPage.png" alt="Rupak Sai Instagram Profile">
+                            <img class="insta-screen-img" src="./assets/photos/instaPage.png" alt="Rupak Sai Instagram Profile">
                             <div class="insta-screen-glare" aria-hidden="true"></div>
                         </div>
                     </a>
@@ -81,16 +85,16 @@
             <div class="editing-tools-panel">
                 <div class="editing-tool is-hovered">
                     <span class="editing-tool-label">After Effects</span>
-                    <img class="editing-tool-icon editing-tool-icon--after-effects" src="./public/photos/Ae Icon.webp"
+                    <img class="editing-tool-icon editing-tool-icon--after-effects" src="./assets/photos/Ae Icon.webp"
                         alt="Adobe After Effects">
                 </div>
                 <div class="editing-tool">
                     <span class="editing-tool-label">Premiere Pro</span>
-                    <img class="editing-tool-icon" src="./public/photos/PrProIcon.svg" alt="Adobe Premiere Pro">
+                    <img class="editing-tool-icon" src="./assets/photos/PrProIcon.svg" alt="Adobe Premiere Pro">
                 </div>
                 <div class="editing-tool">
                     <span class="editing-tool-label">DaVinci Resolve</span>
-                    <img class="editing-tool-icon" src="./public/photos/DaVinciIcon.png" alt="DaVinci Resolve">
+                    <img class="editing-tool-icon" src="./assets/photos/DaVinciIcon.png" alt="DaVinci Resolve">
                 </div>
             </div>
         </section>

@@ -951,6 +951,73 @@ if (document.fonts) {
 }
 updateNavbarOnScroll();
 
+// ==========================================================================
+// Mobile Hamburger Menu Controller
+// ==========================================================================
+const hamburgerBtn = document.getElementById('nav-hamburger');
+const navList = document.getElementById('navbar-nav-list');
+
+function isMobileNavActive() {
+    return window.innerWidth <= 700;
+}
+
+function openMobileNav() {
+    if (!hamburgerBtn || !navList) return;
+    navList.classList.add('is-open');
+    hamburgerBtn.setAttribute('aria-expanded', 'true');
+    hamburgerBtn.setAttribute('aria-label', 'Close navigation menu');
+}
+
+function closeMobileNav() {
+    if (!hamburgerBtn || !navList) return;
+    navList.classList.remove('is-open');
+    hamburgerBtn.setAttribute('aria-expanded', 'false');
+    hamburgerBtn.setAttribute('aria-label', 'Open navigation menu');
+}
+
+function toggleMobileNav() {
+    if (navList && navList.classList.contains('is-open')) {
+        closeMobileNav();
+    } else {
+        openMobileNav();
+    }
+}
+
+if (hamburgerBtn) {
+    hamburgerBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleMobileNav();
+    });
+}
+
+// Close on click outside
+document.addEventListener('click', (e) => {
+    if (!isMobileNavActive()) return;
+    const navbar = document.querySelector('.site-navbar');
+    if (navbar && !navbar.contains(e.target)) {
+        closeMobileNav();
+    }
+});
+
+// Close when a nav link is clicked (navigation handled by existing code)
+if (navList) {
+    navList.querySelectorAll('.nav-link').forEach((link) => {
+        link.addEventListener('click', () => {
+            if (isMobileNavActive()) {
+                closeMobileNav();
+            }
+        });
+    });
+}
+
+// Close when resizing back to desktop
+window.addEventListener('resize', () => {
+    if (!isMobileNavActive()) {
+        closeMobileNav();
+    }
+});
+
+
 // ==========================================
 // Instagram Screenshot 3D Tilt Effect (Proximity Driven with Dynamic Shine Rotation)
 // ==========================================
