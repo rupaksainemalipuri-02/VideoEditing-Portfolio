@@ -5,11 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Montserrat:wght@300;400;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
-        rel="stylesheet">
+    <link rel="preload" href="./public/fonts/Impact.ttf" as="font" type="font/ttf" crossorigin>
+    <link rel="preload" href="./public/fonts/Montserrat-700.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="./public/fonts/Montserrat-400.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="./src/style.css">
 </head>
 
@@ -46,10 +44,10 @@
                         <a class="mobile-nav-link" href="#contact">Contact</a>
                     </div>
                 </div>
-                <button class="mobile-menu-toggle" type="button" aria-label="Open navigation menu"
-                    aria-expanded="false" aria-controls="mobile-nav-menu">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" aria-hidden="true">
+                <button class="mobile-menu-toggle" type="button" aria-label="Open navigation menu" aria-expanded="false"
+                    aria-controls="mobile-nav-menu">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        aria-hidden="true">
                         <path d="M4 6h16M4 12h16M4 18h16" />
                     </svg>
                 </button>
@@ -70,40 +68,40 @@
     <main class="hero-section" id="home">
         <!-- Stage 1: Original Hero Elements (Pushed Up When Cover Section Exits) -->
         <div class="hero-intro-layer">
-                <h1 class="hero-title"><span class="hero-title-word"><span class="hero-title-letter">V</span><span
-                            class="hero-title-letter">I</span><span class="hero-title-letter">D</span><span
-                            class="hero-title-letter">E</span><span class="hero-title-letter">O</span></span><br
-                        class="mobile-title-break"> <span class="hero-title-word"><span
-                            class="hero-title-letter">E</span><span class="hero-title-letter">D</span><span
-                            class="hero-title-letter">I</span><span class="hero-title-letter">T</span><span
-                            class="hero-title-letter">O</span><span class="hero-title-letter">R</span></span></h1>
-                <h1 class="hero-title hero-title--overlay"><span class="hero-title-word"><span
-                            class="hero-title-letter">V</span><span class="hero-title-letter">I</span><span
-                            class="hero-title-letter">D</span><span class="hero-title-letter">E</span><span
-                            class="hero-title-letter">O</span></span><br class="mobile-title-break"> <span
-                        class="hero-title-word"><span class="hero-title-letter">E</span><span
-                            class="hero-title-letter">D</span><span class="hero-title-letter">I</span><span
-                            class="hero-title-letter">T</span><span class="hero-title-letter">O</span><span
-                            class="hero-title-letter">R</span></span></h1>
-                <h1 class="hero-title hero-title--overlay"><span class="hero-title-word"><span
-                            class="hero-title-letter">V</span><span class="hero-title-letter">I</span><span
-                            class="hero-title-letter">D</span><span class="hero-title-letter">E</span><span
-                            class="hero-title-letter">O</span></span><br class="mobile-title-break"> <span
-                        class="hero-title-word"><span class="hero-title-letter">E</span><span
-                            class="hero-title-letter">D</span><span class="hero-title-letter">I</span><span
-                            class="hero-title-letter">T</span><span class="hero-title-letter">O</span><span
-                            class="hero-title-letter">R</span></span></h1>
+            <h1 class="hero-title"><span class="hero-title-word"><span class="hero-title-letter">V</span><span
+                        class="hero-title-letter">I</span><span class="hero-title-letter">D</span><span
+                        class="hero-title-letter">E</span><span class="hero-title-letter">O</span></span><br
+                    class="mobile-title-break"> <span class="hero-title-word"><span
+                        class="hero-title-letter">E</span><span class="hero-title-letter">D</span><span
+                        class="hero-title-letter">I</span><span class="hero-title-letter">T</span><span
+                        class="hero-title-letter">O</span><span class="hero-title-letter">R</span></span></h1>
+            <h1 class="hero-title hero-title--overlay"><span class="hero-title-word"><span
+                        class="hero-title-letter">V</span><span class="hero-title-letter">I</span><span
+                        class="hero-title-letter">D</span><span class="hero-title-letter">E</span><span
+                        class="hero-title-letter">O</span></span><br class="mobile-title-break"> <span
+                    class="hero-title-word"><span class="hero-title-letter">E</span><span
+                        class="hero-title-letter">D</span><span class="hero-title-letter">I</span><span
+                        class="hero-title-letter">T</span><span class="hero-title-letter">O</span><span
+                        class="hero-title-letter">R</span></span></h1>
+            <h1 class="hero-title hero-title--overlay"><span class="hero-title-word"><span
+                        class="hero-title-letter">V</span><span class="hero-title-letter">I</span><span
+                        class="hero-title-letter">D</span><span class="hero-title-letter">E</span><span
+                        class="hero-title-letter">O</span></span><br class="mobile-title-break"> <span
+                    class="hero-title-word"><span class="hero-title-letter">E</span><span
+                        class="hero-title-letter">D</span><span class="hero-title-letter">I</span><span
+                        class="hero-title-letter">T</span><span class="hero-title-letter">O</span><span
+                        class="hero-title-letter">R</span></span></h1>
             <h2 class="portfolio-title">PORTFOLIO</h2>
             <img class="profile-image profile-image--glow" src="./public/photos/me.png" alt="">
             <img class="profile-image profile-image--front" src="./public/photos/me.png" alt="">
-                <h1 class="hero-title hero-title--outline"><span class="hero-title-word"><span
-                            class="hero-title-letter">V</span><span class="hero-title-letter">I</span><span
-                            class="hero-title-letter">D</span><span class="hero-title-letter">E</span><span
-                            class="hero-title-letter">O</span></span><br class="mobile-title-break"> <span
-                        class="hero-title-word"><span class="hero-title-letter">E</span><span
-                            class="hero-title-letter">D</span><span class="hero-title-letter">I</span><span
-                            class="hero-title-letter">T</span><span class="hero-title-letter">O</span><span
-                            class="hero-title-letter">R</span></span></h1>
+            <h1 class="hero-title hero-title--outline"><span class="hero-title-word"><span
+                        class="hero-title-letter">V</span><span class="hero-title-letter">I</span><span
+                        class="hero-title-letter">D</span><span class="hero-title-letter">E</span><span
+                        class="hero-title-letter">O</span></span><br class="mobile-title-break"> <span
+                    class="hero-title-word"><span class="hero-title-letter">E</span><span
+                        class="hero-title-letter">D</span><span class="hero-title-letter">I</span><span
+                        class="hero-title-letter">T</span><span class="hero-title-letter">O</span><span
+                        class="hero-title-letter">R</span></span></h1>
             <div class="hero-bio">
                 <p class="hero-name">Rupak Sai</p>
                 <p class="hero-description">3 years experienced</p>
@@ -159,7 +157,8 @@
 
                         <div class="contact-field">
                             <textarea id="client-message" name="message" class="contact-input contact-textarea" rows="4"
-                                placeholder="Message / Project Details" required aria-label="Message / Project Details"></textarea>
+                                placeholder="Message / Project Details" required
+                                aria-label="Message / Project Details"></textarea>
                         </div>
 
                         <button type="submit" class="contact-send-btn" id="contact-send-btn">
@@ -227,7 +226,7 @@
 
                 <footer class="contact-page-footer">
                     <p>A <span class="footer-serif">Portfolio</span> coded by an <span
-                            class="footer-serif">Engineer</span>
+                            class="footer-serif">Editor</span>
                     </p>
                 </footer>
             </section>
@@ -281,7 +280,8 @@
                             </ul>
                         </div>
                     </div>
-                    <p class="client-result"><span class="client-result-star" aria-hidden="true">&#9733;</span> Paid <strong>14% extra</strong></p>
+                    <p class="client-result"><span class="client-result-star" aria-hidden="true">&#9733;</span> Paid
+                        <strong>14% extra</strong></p>
                     <a class="client-card-link" href="#">Check it out!</a>
                 </article>
                 <article class="client-card">
@@ -295,7 +295,8 @@
                             </ul>
                         </div>
                     </div>
-                    <p class="client-result"><span class="client-result-star" aria-hidden="true">&#9733;</span> Paid <strong>66% extra</strong></p>
+                    <p class="client-result"><span class="client-result-star" aria-hidden="true">&#9733;</span> Paid
+                        <strong>66% extra</strong></p>
                     <a class="client-card-link" href="#">Check it out!</a>
                 </article>
                 <article class="client-card">
@@ -309,7 +310,8 @@
                             </ul>
                         </div>
                     </div>
-                    <p class="client-result"><span class="client-result-star" aria-hidden="true">&#9733;</span> Paid <strong>11% extra</strong></p>
+                    <p class="client-result"><span class="client-result-star" aria-hidden="true">&#9733;</span> Paid
+                        <strong>11% extra</strong></p>
                     <a class="client-card-link" href="#">Check it out!</a>
                 </article>
                 <article class="client-card" aria-hidden="true">
@@ -323,7 +325,8 @@
                             </ul>
                         </div>
                     </div>
-                    <p class="client-result"><span class="client-result-star" aria-hidden="true">&#9733;</span> Paid <strong>14% extra</strong></p>
+                    <p class="client-result"><span class="client-result-star" aria-hidden="true">&#9733;</span> Paid
+                        <strong>14% extra</strong></p>
                     <a class="client-card-link" href="#">Check it out!</a>
                 </article>
                 <article class="client-card" aria-hidden="true">
@@ -337,7 +340,8 @@
                             </ul>
                         </div>
                     </div>
-                    <p class="client-result"><span class="client-result-star" aria-hidden="true">&#9733;</span> Paid <strong>66% extra</strong></p>
+                    <p class="client-result"><span class="client-result-star" aria-hidden="true">&#9733;</span> Paid
+                        <strong>66% extra</strong></p>
                     <a class="client-card-link" href="#">Check it out!</a>
                 </article>
                 <article class="client-card" aria-hidden="true">
@@ -351,7 +355,8 @@
                             </ul>
                         </div>
                     </div>
-                    <p class="client-result"><span class="client-result-star" aria-hidden="true">&#9733;</span> Paid <strong>11% extra</strong></p>
+                    <p class="client-result"><span class="client-result-star" aria-hidden="true">&#9733;</span> Paid
+                        <strong>11% extra</strong></p>
                     <a class="client-card-link" href="#">Check it out!</a>
                 </article>
             </div>
