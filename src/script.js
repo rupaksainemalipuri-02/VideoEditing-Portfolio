@@ -1023,6 +1023,12 @@ window.addEventListener('scroll', () => {
     if (!isVerticalScrolling && !isPullingTransition) {
         targetScrollY = window.scrollY;
     }
+    if (window.scrollY < window.innerHeight) {
+        const currentVh = window.innerHeight || document.documentElement.clientHeight;
+        if (Math.abs(currentVh - lastSyncedVh) > 1) {
+            syncMobileHeroTypography();
+        }
+    }
     updateCoverExitTransform();
 }, { passive: true });
 
@@ -1316,6 +1322,9 @@ window.addEventListener('resize', updateSectionContentScale, { passive: true });
 const mobileHeroMeasureCanvas = document.createElement('canvas');
 const mobileHeroMeasureCtx = mobileHeroMeasureCanvas.getContext('2d');
 
+let lastSyncedVh = 0;
+let lastSyncedWidth = 0;
+
 function syncMobileHeroTypography() {
     const heroIntroLayer = document.querySelector('.hero-intro-layer');
     const heroTitle = document.querySelector('.hero-title');
@@ -1326,6 +1335,10 @@ function syncMobileHeroTypography() {
         '--mobile-hero-top',
         '--mobile-title-gap',
         '--mobile-portfolio-top',
+        '--mobile-profile-h',
+        '--mobile-profile-bottom',
+        '--mobile-bio-inset',
+        '--mobile-vh',
         '--video-sx',
         '--video-sy',
         '--video-extra-mb',
@@ -1342,6 +1355,12 @@ function syncMobileHeroTypography() {
 
     if (!isMobile) {
         varNames.forEach((name) => heroIntroLayer.style.removeProperty(name));
+        document.documentElement.style.removeProperty('--mobile-vh');
+        if (heroSectionElement) {
+            heroSectionElement.style.removeProperty('--mobile-vh');
+        }
+        lastSyncedVh = 0;
+        lastSyncedWidth = 0;
         return;
     }
 
@@ -1352,6 +1371,8 @@ function syncMobileHeroTypography() {
     const editorWord = words[1];
     const screenWidth = heroTitle.clientWidth || document.documentElement.clientWidth || window.innerWidth;
     const vh = window.innerHeight || document.documentElement.clientHeight;
+    lastSyncedVh = vh;
+    lastSyncedWidth = screenWidth;
 
     const measureWord = (wordEl, fallbackText) => {
         const style = getComputedStyle(wordEl);
@@ -1409,10 +1430,21 @@ function syncMobileHeroTypography() {
     const editorExtraMb = targetEditorH - editorMetrics.boxHeight;
 
     const portfolioCenterY = heroTop + targetVideoH + (gap / 2);
+    const targetProfileH = Math.round(vh * 0.58);
+    const bioInset = Math.max(16, Math.min(32, Math.round(vh * 0.026)));
 
+    document.documentElement.style.setProperty('--mobile-vh', `${vh}px`);
+    if (heroSectionElement) {
+        heroSectionElement.style.setProperty('--mobile-vh', `${vh}px`);
+    }
+
+    heroIntroLayer.style.setProperty('--mobile-vh', `${vh}px`);
     heroIntroLayer.style.setProperty('--mobile-hero-top', `${heroTop}px`);
     heroIntroLayer.style.setProperty('--mobile-title-gap', `${gap}px`);
     heroIntroLayer.style.setProperty('--mobile-portfolio-top', `${portfolioCenterY.toFixed(2)}px`);
+    heroIntroLayer.style.setProperty('--mobile-profile-h', `${targetProfileH}px`);
+    heroIntroLayer.style.setProperty('--mobile-profile-bottom', '0px');
+    heroIntroLayer.style.setProperty('--mobile-bio-inset', `${bioInset}px`);
 
     heroIntroLayer.style.setProperty('--video-sx', videoSx.toFixed(4));
     heroIntroLayer.style.setProperty('--video-sy', videoSy.toFixed(4));

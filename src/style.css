@@ -1182,7 +1182,13 @@ img {
 		--hero-bio-scroll-scale: 0.96;
 	}
 
+	.hero-section {
+		height: var(--mobile-vh, 100dvh);
+		min-height: var(--mobile-vh, 100dvh);
+	}
+
 	.hero-intro-layer {
+		height: var(--mobile-vh, 100dvh);
 		overflow: clip;
 	}
 
@@ -1279,11 +1285,16 @@ img {
 		white-space: nowrap;
 	}
 
+	.profile-image {
+		height: var(--mobile-profile-h, min(95vh, 102.8vw));
+		bottom: var(--mobile-profile-bottom, 0px);
+	}
+
 	.hero-bio {
-		--mobile-bio-inset: max(env(safe-area-inset-bottom), clamp(1.1rem, 3.2vh, 2rem));
-		right: var(--mobile-bio-inset);
-		bottom: var(--mobile-bio-inset);
-		max-width: calc(100vw - 2 * var(--mobile-bio-inset));
+		--mobile-bio-computed: var(--mobile-bio-inset, clamp(1.1rem, 3.2vh, 2rem));
+		right: max(env(safe-area-inset-bottom), var(--mobile-bio-computed));
+		bottom: max(env(safe-area-inset-bottom), var(--mobile-bio-computed));
+		max-width: calc(100vw - 2 * max(env(safe-area-inset-bottom), var(--mobile-bio-computed)));
 	}
 
 	.hero-name {
