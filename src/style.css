@@ -131,39 +131,58 @@
 html {
 	scroll-behavior: auto;
 	overscroll-behavior-y: none;
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
-	-webkit-touch-callout: none;
+	-webkit-tap-highlight-color: transparent !important;
+	-webkit-touch-callout: none !important;
+	-webkit-user-select: none !important;
+	-moz-user-select: none !important;
+	-ms-user-select: none !important;
+	user-select: none !important;
 }
 
 body {
 	margin: 0;
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
-	-webkit-touch-callout: none;
+	-webkit-tap-highlight-color: transparent !important;
+	-webkit-touch-callout: none !important;
+	-webkit-user-select: none !important;
+	-moz-user-select: none !important;
+	-ms-user-select: none !important;
+	user-select: none !important;
 }
 
 *,
 *::before,
 *::after {
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
-	-webkit-touch-callout: none;
+	-webkit-tap-highlight-color: transparent !important;
+	-webkit-touch-callout: none !important;
+	-webkit-user-select: none !important;
+	-moz-user-select: none !important;
+	-ms-user-select: none !important;
+	user-select: none !important;
+}
+
+::selection {
+	background: transparent;
+	color: inherit;
+}
+
+::-moz-selection {
+	background: transparent;
+	color: inherit;
 }
 
 input,
 textarea,
 [contenteditable="true"] {
-	-webkit-user-select: text;
-	-moz-user-select: text;
-	-ms-user-select: text;
-	user-select: text;
+	-webkit-user-select: text !important;
+	-moz-user-select: text !important;
+	-ms-user-select: text !important;
+	user-select: text !important;
+}
+
+input::selection,
+textarea::selection {
+	background: rgba(0, 134, 175, 0.4);
+	color: #ffffff;
 }
 
 img {
@@ -172,6 +191,7 @@ img {
 	-webkit-user-drag: none;
 	user-select: none;
 	-webkit-user-select: none;
+	-webkit-touch-callout: none;
 }
 
 /* ==========================================================================
@@ -1058,6 +1078,9 @@ img {
 	cursor: pointer;
 	user-select: none;
 	-webkit-user-select: none;
+	-webkit-tap-highlight-color: transparent !important;
+	-webkit-touch-callout: none !important;
+	touch-action: manipulation;
 }
 
 .editing-tool-label {
@@ -1107,6 +1130,11 @@ img {
 	height: clamp(2.8rem, 4vw, 4.4rem);
 	object-fit: contain;
 	transform-origin: center bottom;
+	pointer-events: none;
+	user-select: none;
+	-webkit-user-select: none;
+	-webkit-user-drag: none;
+	-webkit-touch-callout: none;
 }
 
 .editing-tool-icon.is-bouncing {
@@ -1954,8 +1982,9 @@ img {
 .contact-handles-bar {
 	width: 100%;
 	max-width: 720px;
+	box-sizing: border-box;
 	display: grid;
-	grid-template-columns: 1fr 1fr;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 	gap: 1rem;
 	margin-top: 1.5rem;
 }
@@ -1973,6 +2002,8 @@ img {
 	color: #ffffff;
 	text-decoration: none;
 	box-sizing: border-box;
+	min-width: 0;
+	max-width: 100%;
 	transition: background 0.25s ease, border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
 }
 
@@ -1993,6 +2024,7 @@ img {
 	background: rgba(0, 134, 175, 0.22);
 	border: 1px solid rgba(156, 209, 225, 0.32);
 	color: #9cd1e1;
+	flex-shrink: 0;
 }
 
 .handle-icon-box svg {
@@ -2004,8 +2036,9 @@ img {
 	display: flex;
 	flex-direction: column;
 	gap: 0.18rem;
-	flex: 1;
+	flex: 1 1 0%;
 	min-width: 0;
+	overflow: hidden;
 }
 
 .handle-tag {
@@ -2026,6 +2059,8 @@ img {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
+	display: block;
+	max-width: 100%;
 }
 
 .copy-handle-btn {
@@ -2089,6 +2124,7 @@ img {
 	height: 1.5rem;
 	color: rgba(156, 209, 225, 0.6);
 	transition: transform 0.2s ease, color 0.2s ease;
+	flex-shrink: 0;
 }
 
 .handle-item:hover .handle-arrow {
@@ -2169,12 +2205,38 @@ img {
 
 @media (max-width: 680px) {
 
-	.contact-form-row,
-	.contact-handles-bar {
+	.contact-section {
+		padding: 0 clamp(1rem, 4vw, 1.5rem) max(0px, env(safe-area-inset-bottom));
+	}
+
+	.contact-form-row {
 		grid-template-columns: 1fr;
+	}
+
+	.contact-handles-bar {
+		grid-template-columns: minmax(0, 1fr);
+		width: 100%;
+		max-width: 100%;
+		box-sizing: border-box;
 	}
 
 	.contact-card {
 		padding: 1.25rem;
+		width: 100%;
+		max-width: 100%;
+		box-sizing: border-box;
+	}
+
+	.handle-item {
+		width: 100%;
+		max-width: 100%;
+		box-sizing: border-box;
+		min-width: 0;
+		padding: 0.75rem 0.95rem;
+		gap: 0.75rem;
+	}
+
+	.handle-link {
+		font-size: clamp(0.72rem, 3.2vw, 0.86rem);
 	}
 }

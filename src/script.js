@@ -2295,3 +2295,20 @@ if (contactForm) {
     });
 }
 
+// Prevent text selection across the website (excluding contact form inputs)
+document.addEventListener('selectstart', (e) => {
+    if (e.target.closest('input, textarea, [contenteditable="true"]')) return;
+    e.preventDefault();
+});
+
+// Prevent long-press context menu on images and UI elements
+document.addEventListener('contextmenu', (e) => {
+    if (e.target.closest('input, textarea, [contenteditable="true"]')) return;
+    e.preventDefault();
+});
+
+// Prevent ghost dragging of images
+document.addEventListener('dragstart', (e) => {
+    e.preventDefault();
+});
+
