@@ -660,7 +660,8 @@ window.addEventListener('touchmove', (e) => {
     const maxHScroll = getMaxHorizontalScroll();
     const coverRect = coverSection ? coverSection.getBoundingClientRect() : null;
     const coverBottomDist = coverRect ? coverRect.bottom : window.innerHeight;
-    const isCoverDockedAtBottom = coverBottomDist <= window.innerHeight + 8;
+    const isCoverDockedAtBottom = Math.abs(coverBottomDist - window.innerHeight) <= 24 &&
+        Math.abs(window.scrollY - coverBottomScrollY) <= 32;
     const cardsAreAtEnd = !clientWorkGrid || maxHScroll <= 0 || (
         clientWorkGrid.scrollLeft >= maxHScroll - 8 || horizontalScrollTarget >= maxHScroll - 5
     );
@@ -725,44 +726,58 @@ window.addEventListener('touchmove', (e) => {
         }
     }
 
-    // 2. Cinematic cover exit auto pull-up on swipe down once past 50%
-    const instaScrollY = coverBottomScrollY + window.innerHeight;
-    if (cardsAreAtEnd && dy > 0 && coverBottomDist <= window.innerHeight * 0.50 && window.scrollY < instaScrollY - 6 && !isPullingTransition) {
-        transitionTo(instaScrollY, 1350);
-        return;
-    }
+    // 2. Blanket Transition Rules:
+    // When pushed UP > 30% from bottom -> automatically go UP.
+    // While pulling DOWN, if pulled > 10% from top -> automatically come DOWN.
+    const vh = window.innerHeight;
+    const instaScrollY = coverBottomScrollY + vh;
 
-    // 3. 1-second pause timer in Hero <-> Cover transition zone
-    if (window.scrollY > 0 && window.scrollY < coverSnapTarget) {
-        if (dy > 0) {
-            clearTimeout(heroPullDownTimer);
-            heroPullDownTimer = null;
-            if (!heroPullTimer && window.scrollY > 10) {
-                heroPullTimer = setTimeout(() => {
-                    heroPullTimer = null;
-                    if (window.scrollY > 0 && window.scrollY < coverSnapTarget && !isPullingTransition) {
-                        transitionTo(coverSnapTarget, 1100);
-                    }
-                }, 1000);
-            }
-        } else if (dy < 0) {
-            clearTimeout(heroPullTimer);
-            heroPullTimer = null;
-            const pullDownThreshold = coverSnapTarget * 0.70;
-            if (!heroPullDownTimer && window.scrollY <= pullDownThreshold) {
-                heroPullDownTimer = setTimeout(() => {
-                    heroPullDownTimer = null;
-                    if (window.scrollY > 0 && window.scrollY <= pullDownThreshold && !isPullingTransition) {
-                        transitionTo(0, 1100);
-                    }
-                }, 1000);
+    // 2A. Blanket <-> Instagram zone (Cover section exit / return):
+    if (coverBottomScrollY > 0 && window.scrollY >= coverBottomScrollY - 10 && window.scrollY <= instaScrollY + 16 && !isPullingTransition) {
+        // Pushing UP > 30% from bottom -> go UP into Instagram:
+        if (cardsAreAtEnd && dy > 0 && window.scrollY < instaScrollY - 8) {
+            const pushedUpDistance = Math.max(window.scrollY - coverBottomScrollY, touchStartY - y);
+            if (pushedUpDistance >= vh * 0.30 || coverBottomDist <= vh * 0.70) {
+                transitionTo(instaScrollY, 1250);
+                return;
             }
         }
-    } else {
-        clearTimeout(heroPullTimer);
-        heroPullTimer = null;
-        clearTimeout(heroPullDownTimer);
-        heroPullDownTimer = null;
+        // Pulling DOWN > 10% from top -> come DOWN into Blanket:
+        if (dy < 0 && window.scrollY > coverBottomScrollY + 8) {
+            const pulledDownDistance = Math.max(instaScrollY - window.scrollY, y - touchStartY);
+            if (pulledDownDistance >= vh * 0.10) {
+                transitionTo(coverBottomScrollY, 1250);
+                return;
+            }
+        }
+    }
+
+    // 2B. Hero <-> Blanket zone (Cover section entrance / return):
+    if (window.scrollY >= 0 && window.scrollY <= coverSnapTarget + 16 && !isPullingTransition) {
+        // Pushing UP > 30% from bottom -> go UP into Blanket:
+        if (dy > 0 && window.scrollY < coverSnapTarget - 8) {
+            const pushedUpDistance = Math.max(window.scrollY, touchStartY - y);
+            if (pushedUpDistance >= coverSnapTarget * 0.30) {
+                clearTimeout(heroPullTimer);
+                heroPullTimer = null;
+                clearTimeout(heroPullDownTimer);
+                heroPullDownTimer = null;
+                transitionTo(coverSnapTarget, 1050);
+                return;
+            }
+        }
+        // Pulling DOWN > 10% from top -> come DOWN into Hero:
+        if (dy < 0 && window.scrollY > 8) {
+            const pulledDownDistance = Math.max(coverSnapTarget - window.scrollY, y - touchStartY);
+            if (pulledDownDistance >= coverSnapTarget * 0.10) {
+                clearTimeout(heroPullTimer);
+                heroPullTimer = null;
+                clearTimeout(heroPullDownTimer);
+                heroPullDownTimer = null;
+                transitionTo(0, 1050);
+                return;
+            }
+        }
     }
 
     // 4. Page Bottom Upward Overscroll (pulling up past the bottom of the page)
@@ -982,20 +997,25 @@ function updateCoverExitTransform() {
 
 function applyIdleSettle() {
     const coverSnapTarget = window.innerHeight;
+    const vh = window.innerHeight;
 
     clearTimeout(heroPullTimer);
     heroPullTimer = null;
     clearTimeout(heroPullDownTimer);
     heroPullDownTimer = null;
 
+    // 1. Hero <-> Blanket idle settle:
+    // Pushed up > 30% from bottom -> go UP to coverSnapTarget
+    // Pulled down > 10% from top -> come DOWN to 0
     if (targetScrollY > 0 && targetScrollY < coverSnapTarget) {
         if (lastVerticalDeltaY > 0) {
-            // Pull UP: gently settle to cover section top
-            targetScrollY = coverSnapTarget;
+            if (targetScrollY >= coverSnapTarget * 0.30) {
+                targetScrollY = coverSnapTarget;
+            } else {
+                targetScrollY = 0;
+            }
         } else if (lastVerticalDeltaY < 0) {
-            // Pull DOWN: 30% constraint (must pull down past 30% to settle to hero)
-            const pullDownThreshold = coverSnapTarget * 0.70;
-            if (targetScrollY <= pullDownThreshold) {
+            if (targetScrollY <= coverSnapTarget * 0.90) {
                 targetScrollY = 0;
             } else {
                 targetScrollY = coverSnapTarget;
@@ -1010,15 +1030,32 @@ function applyIdleSettle() {
         return;
     }
 
-    // Cover section exit auto pull-up: once bottom of cover section is at or past 50vh, pull it up smoothly!
+    // 2. Blanket <-> Instagram idle settle:
+    // Pushed up > 30% from bottom -> go UP to instaScrollY
+    // Pulled down > 10% from top -> come DOWN to coverBottomScrollY
     const coverRect = coverSection ? coverSection.getBoundingClientRect() : null;
     const coverBottomDist = coverRect ? coverRect.bottom : window.innerHeight;
     const coverBottomScrollY = getCoverBottomScrollY();
     const instaScrollY = coverBottomScrollY + window.innerHeight;
 
     if (coverBottomScrollY > 0 && window.scrollY > coverBottomScrollY && window.scrollY < instaScrollY) {
-        if (coverBottomDist <= window.innerHeight * 0.50 && !isPullingTransition) {
-            transitionTo(instaScrollY, 1300);
+        if (lastVerticalDeltaY < 0) {
+            // Pulled DOWN from top (Instagram): if pulled down > 10%, come down to Blanket; else return to Instagram
+            const pullDownThreshold = instaScrollY - vh * 0.10;
+            if (window.scrollY <= pullDownThreshold) {
+                transitionTo(coverBottomScrollY, 1150);
+            } else {
+                transitionTo(instaScrollY, 950);
+            }
+            return;
+        } else if (lastVerticalDeltaY > 0) {
+            // Pushed UP from bottom (Blanket): if pushed up > 30%, go up to Instagram; else return to Blanket
+            const pushUpThreshold = coverBottomScrollY + vh * 0.30;
+            if (window.scrollY >= pushUpThreshold || coverBottomDist <= vh * 0.70) {
+                transitionTo(instaScrollY, 1200);
+            } else {
+                transitionTo(coverBottomScrollY, 950);
+            }
             return;
         }
     }
@@ -1199,20 +1236,6 @@ window.addEventListener('scroll', () => {
     }
     updateCoverExitTransform();
 
-    // Cinematic cover exit auto pull-up during scroll momentum
-    const coverRect = coverSection ? coverSection.getBoundingClientRect() : null;
-    const coverBottomDist = coverRect ? coverRect.bottom : window.innerHeight;
-    const coverBottomScrollY = getCoverBottomScrollY();
-    const instaScrollY = coverBottomScrollY + window.innerHeight;
-    const maxHScroll = getMaxHorizontalScroll();
-    const cardsAreAtEnd = !clientWorkGrid || maxHScroll <= 0 || (
-        clientWorkGrid.scrollLeft >= maxHScroll - 8 || horizontalScrollTarget >= maxHScroll - 5
-    );
-
-    if (cardsAreAtEnd && coverBottomDist <= window.innerHeight * 0.50 && currentY > coverBottomScrollY + 4 && currentY < instaScrollY - 8 && !isPullingTransition) {
-        transitionTo(instaScrollY, 1350);
-    }
-
     // Natural momentum arrival at bottom of page (continuous overscroll without stopping)
     const maxScrollY = getMaxScrollY();
     if (currentY < maxScrollY - 24) {
@@ -1270,7 +1293,8 @@ window.addEventListener('wheel', (event) => {
     const maxHScroll = getMaxHorizontalScroll();
     const coverRect = coverSection ? coverSection.getBoundingClientRect() : null;
     const coverBottomDist = coverRect ? coverRect.bottom : window.innerHeight;
-    const isCoverDockedAtBottom = coverBottomDist <= window.innerHeight + 8;
+    const isCoverDockedAtBottom = Math.abs(coverBottomDist - window.innerHeight) <= 24 &&
+        Math.abs(window.scrollY - coverBottomScrollY) <= 32;
     const cardsAreAtEnd = !clientWorkGrid || maxHScroll <= 0 || (
         clientWorkGrid.scrollLeft >= maxHScroll - 8 || horizontalScrollTarget >= maxHScroll - 5
     );
@@ -1433,57 +1457,41 @@ window.addEventListener('wheel', (event) => {
         targetScrollY = Math.max(0, Math.min(maxAllowedY, nextTargetY));
     }
 
-    // Auto pull-up for cover section exit once bottom of cover section reaches 50vh (slow, cinematic pull-up)
-    const instaScrollY = coverBottomScrollY + window.innerHeight;
-    if (cardsAreAtEnd && event.deltaY > 0 && coverBottomDist <= window.innerHeight * 0.50 && window.scrollY < instaScrollY - 4) {
-        transitionTo(instaScrollY, 1350);
-        return;
+    // Blanket Transition Rules in Wheel:
+    // When pushed UP > 30% from bottom -> automatically go UP.
+    // While pulling DOWN, if pulled > 10% from top -> automatically come DOWN.
+    const vh = window.innerHeight;
+    const instaScrollY = coverBottomScrollY + vh;
+
+    // A. Blanket <-> Instagram:
+    if (cardsAreAtEnd && event.deltaY > 0 && targetScrollY >= coverBottomScrollY && targetScrollY < instaScrollY) {
+        if (nextTargetY >= coverBottomScrollY + vh * 0.30 || coverBottomDist <= vh * 0.70) {
+            transitionTo(instaScrollY, 1250);
+            return;
+        }
+    }
+    if (event.deltaY < 0 && targetScrollY > coverBottomScrollY && targetScrollY <= instaScrollY + 8) {
+        if (nextTargetY <= instaScrollY - vh * 0.10) {
+            transitionTo(coverBottomScrollY, 1250);
+            return;
+        }
+    }
+
+    // B. Hero <-> Blanket:
+    if (targetScrollY >= 0 && targetScrollY < coverSnapTarget) {
+        if (event.deltaY > 0 && nextTargetY >= coverSnapTarget * 0.30) {
+            transitionTo(coverSnapTarget, 1050);
+            return;
+        }
+        if (event.deltaY < 0 && nextTargetY <= coverSnapTarget * 0.90 && targetScrollY > 4) {
+            transitionTo(0, 1050);
+            return;
+        }
     }
 
     if (!isVerticalScrolling) {
         isVerticalScrolling = true;
         requestAnimationFrame(updateVerticalScroll);
-    }
-
-    // 1-second pause timer in the transition zone
-    if (targetScrollY > 0 && targetScrollY < coverSnapTarget) {
-        if (event.deltaY > 0) {
-            clearTimeout(heroPullDownTimer);
-            heroPullDownTimer = null;
-            if (!heroPullTimer && targetScrollY > 10) {
-                heroPullTimer = setTimeout(() => {
-                    heroPullTimer = null;
-                    if (targetScrollY > 0 && targetScrollY < coverSnapTarget) {
-                        targetScrollY = coverSnapTarget;
-                        if (!isVerticalScrolling) {
-                            isVerticalScrolling = true;
-                            requestAnimationFrame(updateVerticalScroll);
-                        }
-                    }
-                }, 1000);
-            }
-        } else if (event.deltaY < 0) {
-            clearTimeout(heroPullTimer);
-            heroPullTimer = null;
-            const pullDownThreshold = coverSnapTarget * 0.70;
-            if (!heroPullDownTimer && targetScrollY <= pullDownThreshold) {
-                heroPullDownTimer = setTimeout(() => {
-                    heroPullDownTimer = null;
-                    if (targetScrollY > 0 && targetScrollY <= pullDownThreshold) {
-                        targetScrollY = 0;
-                        if (!isVerticalScrolling) {
-                            isVerticalScrolling = true;
-                            requestAnimationFrame(updateVerticalScroll);
-                        }
-                    }
-                }, 1000);
-            }
-        }
-    } else {
-        clearTimeout(heroPullTimer);
-        heroPullTimer = null;
-        clearTimeout(heroPullDownTimer);
-        heroPullDownTimer = null;
     }
 
     // Soft idle settle: fired 90ms after user finishes scrolling / lifts fingers
@@ -2370,20 +2378,25 @@ if (instaScreenCard) {
         const normY = Math.max(-1, Math.min(1, deltaY / MAX_GYRO_ANGLE));
         const tiltMag = Math.min(1, Math.hypot(normX, normY));
 
-        const diagonalFactor = (normX - normY) / 2;
+        // Opposite tilt direction on mobile phone with doubled tilt amplitude (24deg)
+        const oppNormX = -normX;
+        const oppNormY = -normY;
+        const MOBILE_MAX_TILT_DEG = MAX_TILT_DEG * 2;
+
+        const diagonalFactor = (oppNormX - oppNormY) / 2;
         const maxShift = diagonalFactor >= 0 ? MAX_SHINE_CW_DEG : MAX_SHINE_CCW_DEG;
         const proximity = Math.min(1, 0.35 + tiltMag * 0.65);
 
         wasExitRevealed = true;
         lastGyroTime = now;
         targetProximity = proximity;
-        targetRx = normY * MAX_TILT_DEG;
-        targetRy = -normX * MAX_TILT_DEG;
+        targetRx = oppNormY * MOBILE_MAX_TILT_DEG;
+        targetRy = -oppNormX * MOBILE_MAX_TILT_DEG;
         targetShineAngle = 165 + (diagonalFactor * maxShift);
         targetTy = HOVER_LIFT_PX * tiltMag;
         targetScale = 1 + (HOVER_SCALE - 1) * tiltMag;
-        targetGlareX = 50 + normX * 45;
-        targetGlareY = 50 + normY * 45;
+        targetGlareX = 50 + oppNormX * 45;
+        targetGlareY = 50 + oppNormY * 45;
         targetGlareOpacity = Math.min(0.85, tiltMag * 0.85);
 
         ensureTiltLoop();
