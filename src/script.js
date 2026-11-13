@@ -413,7 +413,12 @@ function triggerBottomOverscrollPulse(peakPx = 46) {
         bottomRawPull = 0;
         bottomOverscrollTarget = 0;
         startBottomOverscrollSpring();
-    }, 130);
+    }, 120);
+}
+
+function triggerBottomOverscrollMomentum(velocityPxPerSec) {
+    const peakPx = Math.min(BOTTOM_MAX_STRETCH, Math.max(26, Math.round(velocityPxPerSec * 0.045)));
+    triggerBottomOverscrollPulse(peakPx);
 }
 
 function resetBottomItems() {
@@ -423,6 +428,7 @@ function resetBottomItems() {
         if (item.el) item.el.style.removeProperty('translate');
     });
 }
+resetBottomItems();
 
 function cancelBottomOverscroll() {
     if (bottomOverscrollAnimId) {
@@ -449,16 +455,18 @@ function updateBottomOverscroll(now) {
     const frameScale = dt / 0.01667;
 
     if (bottomOverscrollTarget > 0) {
-        const followRate = Math.min(1, frameScale * 0.25);
+        // Fast, smooth follow toward target during active pull
+        const followRate = Math.min(1, frameScale * 0.45);
         bottomOverscroll += (bottomOverscrollTarget - bottomOverscroll) * followRate;
         bottomOverscrollVelocity = 0;
     } else if (bottomOverscroll > 0) {
-        const omega = 28;
-        const zeta = 0.78;
+        // Simple Harmonic Motion for container
+        const omega = 22;
+        const zeta = 0.58;
         const accel = -(omega * omega) * bottomOverscroll - (2 * zeta * omega) * bottomOverscrollVelocity;
         bottomOverscrollVelocity += accel * dt;
         bottomOverscroll += bottomOverscrollVelocity * dt;
-        if (bottomOverscroll <= 0.15) {
+        if (bottomOverscroll <= 0.15 && Math.abs(bottomOverscrollVelocity) < 0.6) {
             bottomOverscroll = 0;
             bottomOverscrollVelocity = 0;
         }
@@ -466,6 +474,7 @@ function updateBottomOverscroll(now) {
 
     setBottomOverscrollVar(bottomOverscroll);
 
+    // Staggered Simple Harmonic Motion for individual handles & footer
     const itemDamping = 0.42;
     let itemsActive = false;
 
@@ -501,7 +510,7 @@ function updateBottomOverscroll(now) {
         }
     });
 
-    const isLayerSettled = bottomOverscrollTarget === 0 && bottomOverscroll <= 0.15;
+    const isLayerSettled = bottomOverscrollTarget === 0 && bottomOverscroll <= 0.15 && Math.abs(bottomOverscrollVelocity) < 0.6;
     const isLayerFollowSettled = bottomOverscrollTarget > 0 &&
         Math.abs(bottomOverscrollTarget - bottomOverscroll) < 0.05;
 
@@ -597,6 +606,9 @@ function startHeroOverscrollSpring() {
 }
 
 let topTouchAnchorY = null;
+let touchStartX = 0;
+let touchStartY = 0;
+let touchLastX = 0;
 let touchLastY = null;
 let touchLastTime = 0;
 let touchVelocityY = 0;
@@ -609,8 +621,13 @@ window.addEventListener('touchstart', (e) => {
         targetScrollY = window.scrollY;
         updateNavbarOnScroll();
     }
+    clearTimeout(settleTimer);
     if (e.touches.length === 1) {
+        const x = e.touches[0].clientX;
         const y = e.touches[0].clientY;
+        touchStartX = x;
+        touchStartY = y;
+        touchLastX = x;
         touchLastY = y;
         touchLastTime = performance.now();
         touchVelocityY = 0;
@@ -620,16 +637,37 @@ window.addEventListener('touchstart', (e) => {
 
 window.addEventListener('touchmove', (e) => {
     if (e.touches.length !== 1) return;
+    const x = e.touches[0].clientX;
     const y = e.touches[0].clientY;
     const now = performance.now();
     const dt = Math.max(1, now - touchLastTime);
     const dy = touchLastY !== null ? (touchLastY - y) : 0; // > 0 when finger moves UP (scrolling DOWN)
+    const totalAbsX = Math.abs(x - touchStartX);
+    const totalAbsY = Math.abs(y - touchStartY);
+
     touchVelocityY = dy / dt;
+    touchLastX = x;
     touchLastY = y;
     touchLastTime = now;
 
-    const maxScrollY = getMaxScrollY();
+    if (Math.abs(dy) > 0.5) {
+        lastVerticalDeltaY = dy;
+    }
 
+    const maxScrollY = getMaxScrollY();
+    const coverSnapTarget = window.innerHeight;
+    const coverBottomScrollY = getCoverBottomScrollY();
+    const maxHScroll = getMaxHorizontalScroll();
+    const coverRect = coverSection ? coverSection.getBoundingClientRect() : null;
+    const coverBottomDist = coverRect ? coverRect.bottom : window.innerHeight;
+    const isCoverDockedAtBottom = coverBottomDist <= window.innerHeight + 8;
+    const cardsAreAtEnd = !clientWorkGrid || maxHScroll <= 0 || (
+        clientWorkGrid.scrollLeft >= maxHScroll - 8 || horizontalScrollTarget >= maxHScroll - 5
+    );
+    const cardsAreScrolled = clientWorkGrid && (clientWorkGrid.scrollLeft > 5 || horizontalScrollTarget > 5);
+    const isInExitZone = window.scrollY > coverBottomScrollY + 4 || coverBottomDist < window.innerHeight - 8;
+
+    // 0. Hero Top Upward Overscroll (pulling down past the top of the page)
     if (window.scrollY <= 2) {
         if (topTouchAnchorY === null) topTouchAnchorY = y;
         const delta = y - topTouchAnchorY;
@@ -648,6 +686,86 @@ window.addEventListener('touchmove', (e) => {
         topTouchAnchorY = null;
     }
 
+    // 1. Client Works Horizontal Card Scrubbing (when docked at bottom of cover section)
+    const isHorizontalSwipeOnGrid = e.target.closest('.client-work-grid') && totalAbsX > totalAbsY && totalAbsX > 6;
+
+    if (!isHorizontalSwipeOnGrid) {
+        // 1A. Downward vertical swipe: while cover is at bottom, scrub cards right until end
+        if (isCoverDockedAtBottom && dy > 0 && !cardsAreAtEnd) {
+            if (e.cancelable) e.preventDefault();
+            if (!isHorizontalScrolling) {
+                horizontalScrollTarget = clientWorkGrid.scrollLeft;
+            }
+            horizontalScrollTarget = Math.max(
+                0,
+                Math.min(maxHScroll, horizontalScrollTarget + dy * 1.5)
+            );
+            if (!isHorizontalScrolling) {
+                isHorizontalScrolling = true;
+                requestAnimationFrame(updateHorizontalScroll);
+            }
+            return;
+        }
+
+        // 1B. Upward vertical swipe: if cover is fully on screen and cards are scrolled, scrub cards back left
+        if (isCoverDockedAtBottom && !isInExitZone && dy < 0 && cardsAreScrolled) {
+            if (e.cancelable) e.preventDefault();
+            if (!isHorizontalScrolling) {
+                horizontalScrollTarget = clientWorkGrid.scrollLeft;
+            }
+            horizontalScrollTarget = Math.max(
+                0,
+                Math.min(maxHScroll, horizontalScrollTarget + dy * 1.5)
+            );
+            if (!isHorizontalScrolling) {
+                isHorizontalScrolling = true;
+                requestAnimationFrame(updateHorizontalScroll);
+            }
+            return;
+        }
+    }
+
+    // 2. Cinematic cover exit auto pull-up on swipe down once past 50%
+    const instaScrollY = coverBottomScrollY + window.innerHeight;
+    if (cardsAreAtEnd && dy > 0 && coverBottomDist <= window.innerHeight * 0.50 && window.scrollY < instaScrollY - 6 && !isPullingTransition) {
+        transitionTo(instaScrollY, 1350);
+        return;
+    }
+
+    // 3. 1-second pause timer in Hero <-> Cover transition zone
+    if (window.scrollY > 0 && window.scrollY < coverSnapTarget) {
+        if (dy > 0) {
+            clearTimeout(heroPullDownTimer);
+            heroPullDownTimer = null;
+            if (!heroPullTimer && window.scrollY > 10) {
+                heroPullTimer = setTimeout(() => {
+                    heroPullTimer = null;
+                    if (window.scrollY > 0 && window.scrollY < coverSnapTarget && !isPullingTransition) {
+                        transitionTo(coverSnapTarget, 1100);
+                    }
+                }, 1000);
+            }
+        } else if (dy < 0) {
+            clearTimeout(heroPullTimer);
+            heroPullTimer = null;
+            const pullDownThreshold = coverSnapTarget * 0.70;
+            if (!heroPullDownTimer && window.scrollY <= pullDownThreshold) {
+                heroPullDownTimer = setTimeout(() => {
+                    heroPullDownTimer = null;
+                    if (window.scrollY > 0 && window.scrollY <= pullDownThreshold && !isPullingTransition) {
+                        transitionTo(0, 1100);
+                    }
+                }, 1000);
+            }
+        }
+    } else {
+        clearTimeout(heroPullTimer);
+        heroPullTimer = null;
+        clearTimeout(heroPullDownTimer);
+        heroPullDownTimer = null;
+    }
+
+    // 4. Page Bottom Upward Overscroll (pulling up past the bottom of the page)
     if (maxScrollY > 20 && window.scrollY >= maxScrollY - 2) {
         if (dy > 0) {
             // Continues upward drag past bottom: seamlessly stretch overscroll without stopping
@@ -662,7 +780,7 @@ window.addEventListener('touchmove', (e) => {
             }
         }
     }
-}, { passive: true });
+}, { passive: false });
 
 function releaseHeroOverscroll() {
     topTouchAnchorY = null;
@@ -679,11 +797,18 @@ function releaseHeroOverscroll() {
     if (bottomRawPull > 0 || bottomOverscrollTarget > 0) {
         bottomRawPull = 0;
         bottomOverscrollTarget = 0;
+        if (touchVelocityY > 0.1) {
+            bottomOverscrollVelocity = Math.min(2200, touchVelocityY * 900);
+        }
         startBottomOverscrollSpring();
-    } else if (maxScrollY > 20 && window.scrollY >= maxScrollY - 4 && touchVelocityY > 0.08) {
-        const flingStretch = Math.min(BOTTOM_MAX_STRETCH, Math.max(26, Math.round(touchVelocityY * 55)));
-        triggerBottomOverscrollPulse(flingStretch);
+    } else if (maxScrollY > 20 && window.scrollY >= maxScrollY - 4 && touchVelocityY > 0.12 && !hasTriggeredBottomArrivalOverscroll) {
+        hasTriggeredBottomArrivalOverscroll = true;
+        triggerBottomOverscrollMomentum(touchVelocityY * 1100);
     }
+
+    // Soft idle settle on mobile: snap settle hero/cover or exit zone
+    clearTimeout(settleTimer);
+    settleTimer = setTimeout(applyIdleSettle, 110);
 }
 
 window.addEventListener('touchend', releaseHeroOverscroll, { passive: true });
@@ -877,9 +1002,10 @@ function applyIdleSettle() {
             }
         }
 
-        if (!isVerticalScrolling) {
-            isVerticalScrolling = true;
-            requestAnimationFrame(updateVerticalScroll);
+        if (isVerticalScrolling) {
+            // Lerp loop already active, smoothly glides to targetScrollY
+        } else if (!isPullingTransition) {
+            transitionTo(targetScrollY, 950);
         }
         return;
     }
@@ -891,7 +1017,7 @@ function applyIdleSettle() {
     const instaScrollY = coverBottomScrollY + window.innerHeight;
 
     if (coverBottomScrollY > 0 && window.scrollY > coverBottomScrollY && window.scrollY < instaScrollY) {
-        if (coverBottomDist <= window.innerHeight * 0.50) {
+        if (coverBottomDist <= window.innerHeight * 0.50 && !isPullingTransition) {
             transitionTo(instaScrollY, 1300);
             return;
         }
@@ -1056,6 +1182,9 @@ window.addEventListener('scroll', () => {
     const dt = Math.max(1, now - lastScrollTime);
     const dy = currentY - lastScrollY;
     scrollVelocityY = dy / dt; // positive when scrolling DOWN (px/ms)
+    if (Math.abs(dy) > 0.5) {
+        lastVerticalDeltaY = dy;
+    }
     lastScrollY = currentY;
     lastScrollTime = now;
 
@@ -1070,6 +1199,20 @@ window.addEventListener('scroll', () => {
     }
     updateCoverExitTransform();
 
+    // Cinematic cover exit auto pull-up during scroll momentum
+    const coverRect = coverSection ? coverSection.getBoundingClientRect() : null;
+    const coverBottomDist = coverRect ? coverRect.bottom : window.innerHeight;
+    const coverBottomScrollY = getCoverBottomScrollY();
+    const instaScrollY = coverBottomScrollY + window.innerHeight;
+    const maxHScroll = getMaxHorizontalScroll();
+    const cardsAreAtEnd = !clientWorkGrid || maxHScroll <= 0 || (
+        clientWorkGrid.scrollLeft >= maxHScroll - 8 || horizontalScrollTarget >= maxHScroll - 5
+    );
+
+    if (cardsAreAtEnd && coverBottomDist <= window.innerHeight * 0.50 && currentY > coverBottomScrollY + 4 && currentY < instaScrollY - 8 && !isPullingTransition) {
+        transitionTo(instaScrollY, 1350);
+    }
+
     // Natural momentum arrival at bottom of page (continuous overscroll without stopping)
     const maxScrollY = getMaxScrollY();
     if (currentY < maxScrollY - 24) {
@@ -1077,10 +1220,13 @@ window.addEventListener('scroll', () => {
     } else if (maxScrollY > 20 && currentY >= maxScrollY - 2 && !hasTriggeredBottomArrivalOverscroll && !isPullingTransition) {
         if (scrollVelocityY > 0.04) {
             hasTriggeredBottomArrivalOverscroll = true;
-            const momentumStretch = Math.min(BOTTOM_MAX_STRETCH, Math.max(26, Math.round(scrollVelocityY * 58)));
-            triggerBottomOverscrollPulse(momentumStretch);
+            triggerBottomOverscrollMomentum(scrollVelocityY * 1200);
         }
     }
+
+    // Soft idle settle debounce
+    clearTimeout(settleTimer);
+    settleTimer = setTimeout(applyIdleSettle, 110);
 }, { passive: true });
 
 window.addEventListener('resize', () => {
