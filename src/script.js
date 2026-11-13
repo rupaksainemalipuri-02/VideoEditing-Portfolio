@@ -600,6 +600,13 @@ let topTouchAnchorY = null;
 let bottomTouchAnchorY = null;
 
 window.addEventListener('touchstart', (e) => {
+    if (isPullingTransition && !e.target.closest('.site-navbar, .navbar-wrapper')) {
+        if (transitionAnimId) cancelAnimationFrame(transitionAnimId);
+        isPullingTransition = false;
+        transitionAnimId = null;
+        targetScrollY = window.scrollY;
+        updateNavbarOnScroll();
+    }
     if (e.touches.length === 1) {
         const y = e.touches[0].clientY;
         const maxScrollY = getMaxScrollY();
@@ -966,23 +973,29 @@ function transitionTo(targetY, duration = 500, options = {}) {
         if (bottomOverscrollPx > 0) {
             triggerBottomOverscrollPulse(Math.min(38, bottomOverscrollPx));
         }
+        updateNavbarOnScroll();
         return;
     }
 
     const startTime = performance.now();
     const virtualTotalDistance = distance + activeBottomOverscroll;
 
-    // Smooth ease-out (quartic normally, or cubic directly through targetY + overscroll when activeBottomOverscroll is set)
-    function easeOutCurve(t) {
-        return activeBottomOverscroll > 0
-            ? (1 - Math.pow(1 - t, 3))
-            : (1 - Math.pow(1 - t, 4));
+    // Smooth ease curve:
+    // When rebounding with bottom overscroll, cubic ease-out creates a natural deceleration into the spring.
+    // For normal section travel, cubic ease-in-out creates buttery-smooth, organic acceleration and deceleration without sudden jerk.
+    function easeCurve(t) {
+        if (options.easing === 'easeOut' || activeBottomOverscroll > 0) {
+            return 1 - Math.pow(1 - t, 3);
+        }
+        return t < 0.5
+            ? 4 * t * t * t
+            : 1 - Math.pow(-2 * t + 2, 3) / 2;
     }
 
     function step(now) {
         const elapsed = now - startTime;
         const progress = Math.min(1, elapsed / duration);
-        const eased = easeOutCurve(progress);
+        const eased = easeCurve(progress);
 
         if (activeBottomOverscroll > 0) {
             const virtualY = startY + virtualTotalDistance * eased;
@@ -1012,6 +1025,7 @@ function transitionTo(targetY, duration = 500, options = {}) {
                 bottomOverscrollTarget = 0;
                 startBottomOverscrollSpring();
             }
+            updateNavbarOnScroll();
         }
     }
 
@@ -1306,6 +1320,8 @@ const mobileSectionLabels = {
 let isHoveringNavbar = false;
 let currentBubbleX = null;
 let bubbleStretchTimer = null;
+let currentSectionId = 'home';
+let suppressNavClick = false;
 
 function updateSectionContentScale() {
     const progress = Math.min(1, Math.max(0, (window.innerWidth - 700) / 324));
@@ -1627,6 +1643,7 @@ function getSectionScrollTarget(sectionId) {
 }
 
 function setActiveNavLink(sectionId) {
+    currentSectionId = sectionId;
     let matchedLink = null;
     navLinks.forEach((link) => {
         const href = link.getAttribute('href');
@@ -1645,7 +1662,7 @@ function setActiveNavLink(sectionId) {
 }
 
 function updateNavbarOnScroll() {
-    if (!navLinks.length) return;
+    if (!navLinks.length || isPullingTransition) return;
     const scrollY = window.scrollY;
     const coverTop = coverSection ? coverSection.offsetTop : window.innerHeight;
 
@@ -1675,40 +1692,151 @@ function updateNavbarOnScroll() {
     }
 }
 
+function navigateToSection(targetId, options = {}) {
+    if (!targetId || !mobileSectionOrder.includes(targetId)) return;
+
+    setMobileMenuOpen(false);
+
+    if (targetId === 'instagram' || targetId === 'contact') {
+        const maxHScroll = getMaxHorizontalScroll();
+        if (clientWorkGrid && maxHScroll > 0) {
+            clientWorkGrid.scrollLeft = maxHScroll;
+            horizontalScrollTarget = maxHScroll;
+            updateClientGridMask();
+        }
+    } else if (targetId === 'home' || targetId === 'about') {
+        if (clientWorkGrid) {
+            clientWorkGrid.scrollLeft = 0;
+            horizontalScrollTarget = 0;
+            updateClientGridMask();
+        }
+    }
+
+    const targetY = getSectionScrollTarget(targetId);
+    targetScrollY = targetY;
+    setActiveNavLink(targetId);
+
+    const desktopLink = document.querySelector(`.navbar-nav .nav-link[href="#${targetId}"]`);
+    if (desktopLink) {
+        moveBubbleTo(desktopLink);
+    }
+
+    const distance = Math.abs(targetY - window.scrollY);
+    const duration = options.duration || Math.min(720, Math.max(420, Math.round(350 + Math.sqrt(distance) * 6.5)));
+
+    transitionTo(targetY, duration, targetId === 'contact' ? { bottomOverscrollPx: 48 } : {});
+}
+
 // Navigation uses the same smooth scrolling behavior for desktop, mobile, and menu links.
 allNavLinks.forEach((link) => {
     link.addEventListener('click', (event) => {
         event.preventDefault();
+        if (suppressNavClick) return;
+
         const targetId = link.getAttribute('href')?.replace('#', '');
         if (!targetId) return;
 
-        setMobileMenuOpen(false);
-
-        if (targetId === 'instagram' || targetId === 'contact') {
-            const maxHScroll = getMaxHorizontalScroll();
-            if (clientWorkGrid && maxHScroll > 0) {
-                clientWorkGrid.scrollLeft = maxHScroll;
-                horizontalScrollTarget = maxHScroll;
-                updateClientGridMask();
-            }
-        } else if (targetId === 'home' || targetId === 'about') {
-            if (clientWorkGrid) {
-                clientWorkGrid.scrollLeft = 0;
-                horizontalScrollTarget = 0;
-                updateClientGridMask();
-            }
-        }
-
-        const targetY = getSectionScrollTarget(targetId);
-        targetScrollY = targetY;
-        setActiveNavLink(targetId);
-        if (link.closest('.navbar-nav')) {
-            moveBubbleTo(link);
-        }
-
-        transitionTo(targetY, 600, targetId === 'contact' ? { bottomOverscrollPx: 52 } : {});
+        navigateToSection(targetId);
     });
 });
+
+// Navbar Horizontal Swipe Navigation (Forward / Backward through sections)
+const navbarGestureTarget = siteNavbar || document.querySelector('.navbar-wrapper');
+
+if (navbarGestureTarget) {
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchStartTime = 0;
+    let isNavbarSwiping = false;
+
+    navbarGestureTarget.addEventListener('touchstart', (e) => {
+        if (e.touches.length !== 1) return;
+        // Do not intercept taps/swipes on hamburger toggle button or inside opened dropdown menu
+        if (e.target.closest('.mobile-menu-toggle, .mobile-nav-menu')) return;
+
+        const touch = e.touches[0];
+        touchStartX = touch.clientX;
+        touchStartY = touch.clientY;
+        touchStartTime = performance.now();
+        isNavbarSwiping = true;
+    }, { passive: true });
+
+    navbarGestureTarget.addEventListener('touchmove', (e) => {
+        if (!isNavbarSwiping || e.touches.length !== 1) return;
+
+        const touch = e.touches[0];
+        const dx = touch.clientX - touchStartX;
+        const dy = touch.clientY - touchStartY;
+
+        // If swipe is predominantly horizontal, prevent browser vertical page scroll during gesture
+        if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 6) {
+            if (e.cancelable) {
+                e.preventDefault();
+            }
+        }
+    }, { passive: false });
+
+    const handleNavbarTouchEnd = (e) => {
+        if (!isNavbarSwiping) return;
+        isNavbarSwiping = false;
+
+        const touch = e.changedTouches ? e.changedTouches[0] : null;
+        if (!touch) return;
+
+        const diffX = touch.clientX - touchStartX;
+        const diffY = touch.clientY - touchStartY;
+        const elapsed = performance.now() - touchStartTime;
+
+        const absX = Math.abs(diffX);
+        const absY = Math.abs(diffY);
+
+        const isQuickFlick = absX > 22 && elapsed < 320;
+        const isDeliberateSwipe = absX >= 30;
+
+        if ((isDeliberateSwipe || isQuickFlick) && absX > absY * 1.1) {
+            suppressNavClick = true;
+            setTimeout(() => {
+                suppressNavClick = false;
+            }, 300);
+
+            const currentIndex = mobileSectionOrder.indexOf(currentSectionId);
+            const validIndex = currentIndex >= 0 ? currentIndex : 0;
+
+            if (diffX < 0) {
+                // Swipe Left -> Next Section (Forward)
+                if (validIndex < mobileSectionOrder.length - 1) {
+                    navigateToSection(mobileSectionOrder[validIndex + 1]);
+                } else if (mobileNavTrack) {
+                    const slotWidth = mobileNavLinks[0]?.offsetWidth || 80;
+                    const baseTranslate = -(mobileSectionOrder.length - 2) * slotWidth;
+                    mobileNavTrack.style.transition = 'transform 180ms ease-out';
+                    mobileNavTrack.style.transform = `translateX(${baseTranslate - 14}px)`;
+                    setTimeout(() => {
+                        mobileNavTrack.style.transition = '';
+                        mobileNavTrack.style.transform = `translateX(${baseTranslate}px)`;
+                    }, 180);
+                }
+            } else {
+                // Swipe Right -> Previous Section (Backward)
+                if (validIndex > 0) {
+                    navigateToSection(mobileSectionOrder[validIndex - 1]);
+                } else if (mobileNavTrack) {
+                    mobileNavTrack.style.transition = 'transform 180ms ease-out';
+                    mobileNavTrack.style.transform = 'translateX(14px)';
+                    setTimeout(() => {
+                        mobileNavTrack.style.transition = '';
+                        mobileNavTrack.style.transform = 'translateX(0px)';
+                    }, 180);
+                }
+            }
+        }
+    };
+
+    navbarGestureTarget.addEventListener('touchend', handleNavbarTouchEnd, { passive: true });
+    navbarGestureTarget.addEventListener('touchcancel', () => {
+        isNavbarSwiping = false;
+    }, { passive: true });
+}
 
 if (siteNavbar) {
     siteNavbar.addEventListener('pointerenter', () => {
