@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Montserrat:wght@300;400;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="./src/style.css">
 </head>
@@ -31,22 +31,79 @@
                 <li><a href="#home" class="nav-link is-active">Home</a></li>
                 <li><a href="#about" class="nav-link">About</a></li>
                 <li><a href="#tools" class="nav-link">Tools</a></li>
-                <li><a href="#work" class="nav-link">Work</a></li>
+                <li><a href="#work" class="nav-link">Clients</a></li>
                 <li><a href="#instagram" class="nav-link">Instagram</a></li>
             </ul>
+            <div class="mobile-nav">
+                <div class="mobile-nav-window">
+                    <span class="mobile-nav-bubble" aria-hidden="true"></span>
+                    <div class="mobile-nav-track">
+                        <a class="mobile-nav-link is-current" href="#home" aria-current="location">Home</a>
+                        <a class="mobile-nav-link" href="#about">About</a>
+                        <a class="mobile-nav-link" href="#tools">Tools</a>
+                        <a class="mobile-nav-link" href="#work">Client</a>
+                        <a class="mobile-nav-link" href="#instagram">Instagram</a>
+                        <a class="mobile-nav-link" href="#contact">Contact</a>
+                    </div>
+                </div>
+                <button class="mobile-menu-toggle" type="button" aria-label="Open navigation menu"
+                    aria-expanded="false" aria-controls="mobile-nav-menu">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" aria-hidden="true">
+                        <path d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+                <div class="mobile-nav-menu" id="mobile-nav-menu" aria-hidden="true">
+                    <div class="mobile-nav-menu-inner">
+                        <a class="mobile-menu-link" href="#home">Home</a>
+                        <a class="mobile-menu-link" href="#about">About</a>
+                        <a class="mobile-menu-link" href="#tools">Tools</a>
+                        <a class="mobile-menu-link" href="#work">Client</a>
+                        <a class="mobile-menu-link" href="#instagram">Instagram</a>
+                        <a class="mobile-menu-link" href="#contact">Contact</a>
+                    </div>
+                </div>
+            </div>
         </nav>
     </header>
 
     <main class="hero-section" id="home">
         <!-- Stage 1: Original Hero Elements (Pushed Up When Cover Section Exits) -->
         <div class="hero-intro-layer">
-            <h1 class="hero-title">VIDEO EDITOR</h1>
-            <h1 class="hero-title hero-title--overlay">VIDEO EDITOR</h1>
-            <h1 class="hero-title hero-title--overlay">VIDEO EDITOR</h1>
+                <h1 class="hero-title"><span class="hero-title-word"><span class="hero-title-letter">V</span><span
+                            class="hero-title-letter">I</span><span class="hero-title-letter">D</span><span
+                            class="hero-title-letter">E</span><span class="hero-title-letter">O</span></span><br
+                        class="mobile-title-break"> <span class="hero-title-word"><span
+                            class="hero-title-letter">E</span><span class="hero-title-letter">D</span><span
+                            class="hero-title-letter">I</span><span class="hero-title-letter">T</span><span
+                            class="hero-title-letter">O</span><span class="hero-title-letter">R</span></span></h1>
+                <h1 class="hero-title hero-title--overlay"><span class="hero-title-word"><span
+                            class="hero-title-letter">V</span><span class="hero-title-letter">I</span><span
+                            class="hero-title-letter">D</span><span class="hero-title-letter">E</span><span
+                            class="hero-title-letter">O</span></span><br class="mobile-title-break"> <span
+                        class="hero-title-word"><span class="hero-title-letter">E</span><span
+                            class="hero-title-letter">D</span><span class="hero-title-letter">I</span><span
+                            class="hero-title-letter">T</span><span class="hero-title-letter">O</span><span
+                            class="hero-title-letter">R</span></span></h1>
+                <h1 class="hero-title hero-title--overlay"><span class="hero-title-word"><span
+                            class="hero-title-letter">V</span><span class="hero-title-letter">I</span><span
+                            class="hero-title-letter">D</span><span class="hero-title-letter">E</span><span
+                            class="hero-title-letter">O</span></span><br class="mobile-title-break"> <span
+                        class="hero-title-word"><span class="hero-title-letter">E</span><span
+                            class="hero-title-letter">D</span><span class="hero-title-letter">I</span><span
+                            class="hero-title-letter">T</span><span class="hero-title-letter">O</span><span
+                            class="hero-title-letter">R</span></span></h1>
             <h2 class="portfolio-title">PORTFOLIO</h2>
             <img class="profile-image profile-image--glow" src="./public/photos/me.png" alt="">
             <img class="profile-image profile-image--front" src="./public/photos/me.png" alt="">
-            <h1 class="hero-title hero-title--outline">VIDEO EDITOR</h1>
+                <h1 class="hero-title hero-title--outline"><span class="hero-title-word"><span
+                            class="hero-title-letter">V</span><span class="hero-title-letter">I</span><span
+                            class="hero-title-letter">D</span><span class="hero-title-letter">E</span><span
+                            class="hero-title-letter">O</span></span><br class="mobile-title-break"> <span
+                        class="hero-title-word"><span class="hero-title-letter">E</span><span
+                            class="hero-title-letter">D</span><span class="hero-title-letter">I</span><span
+                            class="hero-title-letter">T</span><span class="hero-title-letter">O</span><span
+                            class="hero-title-letter">R</span></span></h1>
             <div class="hero-bio">
                 <p class="hero-name">Rupak Sai</p>
                 <p class="hero-description">3 years experienced</p>
@@ -61,13 +118,118 @@
                     My <span class="about-title-emphasis">Instagram</span> Page
                 </h2>
                 <div class="insta-screen-container">
-                    <a class="insta-screen-card" href="https://www.instagram.com/rupaksai002/" target="_blank" rel="noopener noreferrer" aria-label="Open Rupak Sai Instagram Profile">
+                    <a class="insta-screen-card" href="https://www.instagram.com/rupaksai002/" target="_blank"
+                        rel="noopener noreferrer" aria-label="Open Rupak Sai Instagram Profile">
                         <div class="insta-screen-inner">
-                            <img class="insta-screen-img" src="./public/photos/instaPage.png" alt="Rupak Sai Instagram Profile">
+                            <img class="insta-screen-img" src="./public/photos/instaPage.png"
+                                alt="Rupak Sai Instagram Profile">
                             <div class="insta-screen-glare" aria-hidden="true"></div>
                         </div>
                     </a>
                 </div>
+            </section>
+
+            <!-- Client Contact Section Right Below InstaPage -->
+            <section class="contact-section" id="contact" aria-labelledby="contact-title">
+                <div class="contact-header">
+                    <h2 class="section-title contact-title" id="contact-title">
+                        Let's <span class="about-title-emphasis">Connect</span>
+                    </h2>
+                </div>
+
+                <!-- Client's Contact Form Card -->
+                <div class="contact-card">
+                    <form class="contact-form" id="contact-form"
+                        action="https://formsubmit.co/rupaksainemalipuri@gmail.com" method="POST" novalidate>
+                        <!-- FormSubmit Configuration -->
+                        <input type="hidden" name="_subject" value="New Freelance Project Inquiry!">
+                        <input type="hidden" name="_captcha" value="false">
+                        <input type="hidden" name="_template" value="table">
+
+                        <div class="contact-form-row">
+                            <div class="contact-field">
+                                <input type="text" id="client-name" name="name" class="contact-input"
+                                    placeholder="Your Name" required autocomplete="name" aria-label="Your Name">
+                            </div>
+                            <div class="contact-field">
+                                <input type="email" id="client-email" name="email" class="contact-input"
+                                    placeholder="Your Email" required autocomplete="email" aria-label="Your Email">
+                            </div>
+                        </div>
+
+                        <div class="contact-field">
+                            <textarea id="client-message" name="message" class="contact-input contact-textarea" rows="4"
+                                placeholder="Message / Project Details" required aria-label="Message / Project Details"></textarea>
+                        </div>
+
+                        <button type="submit" class="contact-send-btn" id="contact-send-btn">
+                            <span>Send Message</span>
+                            <svg class="send-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <line x1="22" y1="2" x2="11" y2="13" />
+                                <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                            </svg>
+                        </button>
+
+                        <div class="contact-feedback" id="contact-feedback" aria-live="polite"></div>
+                    </form>
+                </div>
+
+                <!-- Handles below contact form: Insta & Mail -->
+                <div class="contact-handles-bar">
+                    <div class="handle-item handle-email">
+                        <div class="handle-icon-box" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <rect width="20" height="16" x="2" y="4" rx="2" />
+                                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                            </svg>
+                        </div>
+                        <div class="handle-info">
+                            <span class="handle-tag">Direct Mail</span>
+                            <a href="mailto:rupaksainemalipuri@gmail.com"
+                                class="handle-link">rupaksainemalipuri@gmail.com</a>
+                        </div>
+                        <button type="button" class="copy-handle-btn" id="copy-email-btn"
+                            aria-label="Copy email address" title="Copy email">
+                            <svg class="copy-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+                                <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+                            </svg>
+                            <span class="copy-tooltip" id="copy-tooltip">Copy</span>
+                        </button>
+                    </div>
+
+                    <a href="https://www.instagram.com/rupaksai002/" target="_blank" rel="noopener noreferrer"
+                        class="handle-item handle-insta" aria-label="Open Rupak Sai Instagram Profile">
+                        <div class="handle-icon-box" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+                                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                                <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+                            </svg>
+                        </div>
+                        <div class="handle-info">
+                            <span class="handle-tag">Instagram</span>
+                            <span class="handle-link">@rupaksai002</span>
+                        </div>
+                        <div class="handle-arrow" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M7 17 17 7" />
+                                <path d="M7 7h10v10" />
+                            </svg>
+                        </div>
+                    </a>
+                </div>
+
+                <footer class="contact-page-footer">
+                    <p>A <span class="footer-serif">Portfolio</span> coded by an <span
+                            class="footer-serif">Engineer</span>
+                    </p>
+                </footer>
             </section>
         </div>
     </main>
@@ -89,7 +251,7 @@
             <h2 class="section-title editing-tools-title" id="editing-tools-title">What do I <span
                     class="about-title-emphasis">Edit</span> on?</h2>
             <div class="editing-tools-panel">
-                <div class="editing-tool is-hovered">
+                <div class="editing-tool">
                     <span class="editing-tool-label">After Effects</span>
                     <img class="editing-tool-icon editing-tool-icon--after-effects" src="./public/photos/Ae Icon.webp"
                         alt="Adobe After Effects">
@@ -106,28 +268,34 @@
         </section>
         <section class="client-work" id="work" aria-labelledby="client-work-title">
             <h2 class="section-title client-work-title" id="client-work-title">Client <span
-                    class="about-title-emphasis">Works</span></h2>
+                    class="about-title-emphasis">Reviews</span></h2>
             <div class="client-work-grid">
                 <article class="client-card">
                     <div class="client-card-header">
                         <div class="client-avatar">D</div>
                         <div>
                             <h3>Defellix</h3>
-                            <p>3d Lyrical Edit, After Effects</p>
+                            <ul class="client-card-services">
+                                <li>3D Lyrical Edit</li>
+                                <li>After Effects</li>
+                            </ul>
                         </div>
                     </div>
-                    <p class="client-result">&#9733; Paid 14% extra</p>
+                    <p class="client-result"><span class="client-result-star" aria-hidden="true">&#9733;</span> Paid <strong>14% extra</strong></p>
                     <a class="client-card-link" href="#">Check it out!</a>
                 </article>
                 <article class="client-card">
                     <div class="client-card-header">
-                        <div class="client-avatar">R</div>
+                        <div class="client-avatar">K</div>
                         <div>
-                            <h3>Rajanith</h3>
-                            <p>3d Lyrical Edit, After Effects</p>
+                            <h3>Kajanth</h3>
+                            <ul class="client-card-services">
+                                <li>3D Lyrical Edit</li>
+                                <li>After Effects</li>
+                            </ul>
                         </div>
                     </div>
-                    <p class="client-result">&#9733; Paid 66% extra</p>
+                    <p class="client-result"><span class="client-result-star" aria-hidden="true">&#9733;</span> Paid <strong>66% extra</strong></p>
                     <a class="client-card-link" href="#">Check it out!</a>
                 </article>
                 <article class="client-card">
@@ -135,10 +303,13 @@
                         <div class="client-avatar">S</div>
                         <div>
                             <h3>SP Alan</h3>
-                            <p>3d Lyrical Edit, After Effects</p>
+                            <ul class="client-card-services">
+                                <li>3D Lyrical Edit</li>
+                                <li>After Effects</li>
+                            </ul>
                         </div>
                     </div>
-                    <p class="client-result">&#9733; Paid 11% extra</p>
+                    <p class="client-result"><span class="client-result-star" aria-hidden="true">&#9733;</span> Paid <strong>11% extra</strong></p>
                     <a class="client-card-link" href="#">Check it out!</a>
                 </article>
                 <article class="client-card" aria-hidden="true">
@@ -146,21 +317,27 @@
                         <div class="client-avatar">D</div>
                         <div>
                             <h3>Defellix</h3>
-                            <p>3d Lyrical Edit, After Effects</p>
+                            <ul class="client-card-services">
+                                <li>3D Lyrical Edit</li>
+                                <li>After Effects</li>
+                            </ul>
                         </div>
                     </div>
-                    <p class="client-result">&#9733; Paid 14% extra</p>
+                    <p class="client-result"><span class="client-result-star" aria-hidden="true">&#9733;</span> Paid <strong>14% extra</strong></p>
                     <a class="client-card-link" href="#">Check it out!</a>
                 </article>
                 <article class="client-card" aria-hidden="true">
                     <div class="client-card-header">
-                        <div class="client-avatar">R</div>
+                        <div class="client-avatar">K</div>
                         <div>
-                            <h3>Rajanith</h3>
-                            <p>3d Lyrical Edit, After Effects</p>
+                            <h3>Kajanth</h3>
+                            <ul class="client-card-services">
+                                <li>3D Lyrical Edit</li>
+                                <li>After Effects</li>
+                            </ul>
                         </div>
                     </div>
-                    <p class="client-result">&#9733; Paid 66% extra</p>
+                    <p class="client-result"><span class="client-result-star" aria-hidden="true">&#9733;</span> Paid <strong>66% extra</strong></p>
                     <a class="client-card-link" href="#">Check it out!</a>
                 </article>
                 <article class="client-card" aria-hidden="true">
@@ -168,10 +345,13 @@
                         <div class="client-avatar">S</div>
                         <div>
                             <h3>SP Alan</h3>
-                            <p>3d Lyrical Edit, After Effects</p>
+                            <ul class="client-card-services">
+                                <li>3D Lyrical Edit</li>
+                                <li>After Effects</li>
+                            </ul>
                         </div>
                     </div>
-                    <p class="client-result">&#9733; Paid 11% extra</p>
+                    <p class="client-result"><span class="client-result-star" aria-hidden="true">&#9733;</span> Paid <strong>11% extra</strong></p>
                     <a class="client-card-link" href="#">Check it out!</a>
                 </article>
             </div>
